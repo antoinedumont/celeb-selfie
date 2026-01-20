@@ -6,10 +6,12 @@ import { ProcessingIndicator } from './components/ProcessingIndicator';
 import { CelebrityResult } from './components/CelebrityResult';
 import { AdminGallery } from './components/admin/AdminGallery';
 import { Onboarding } from './components/Onboarding';
+import { PasswordProtection } from './components/PasswordProtection';
 import { compositeWithNanoBanana, type CompositeResult } from './services/composite';
 import { buildFreestyleSelfiePrompt } from './services/composite/promptBuilder';
 import type { AppStep, CapturedPhoto, AppError, GalleryMetadata } from './types';
 import { savePhoto } from './services/galleryStorage.service';
+import { isPasswordRequired, getAuthSession, clearAuthSession } from './utils/auth.utils';
 
 function App() {
   const [step, setStep] = useState<AppStep>('camera');
@@ -19,6 +21,13 @@ function App() {
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [showAdminGallery, setShowAdminGallery] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    // Check if password is required and if user is already authenticated
+    if (!isPasswordRequired()) {
+      return true; // No password required, allow access
+    }
+    return getAuthSession(); // Check localStorage for existing session
+  });
 
   // Celebrity state
   const [celebrityName, setCelebrityName] = useState<string>('');
@@ -27,12 +36,16 @@ function App() {
   const [generatedPrompt, setGeneratedPrompt] = useState<string>('');
   const [generatedJsonTemplate, setGeneratedJsonTemplate] = useState<any>(null);
 
-  // Keyboard shortcut for admin gallery (Ctrl+Shift+G)
+  // Keyboard shortcuts (Ctrl+Shift+G for admin, Ctrl+Shift+L for logout)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'G') {
         e.preventDefault();
         setShowAdminGallery(true);
+      }
+      if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+        e.preventDefault();
+        handleLogout();
       }
     };
     window.addEventListener('keydown', handleKeyPress);
@@ -142,6 +155,29 @@ function App() {
     setCelebrityResult(null);
     setCelebrityProgress(0);
   };
+
+  const handleAuthenticated = () => {
+    console.log('[App] User authenticated successfully');
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    console.log('[App] Logging out user');
+    clearAuthSession();
+    setIsAuthenticated(false);
+    // Reset app state on logout
+    handleReset();
+    setShowOnboarding(true);
+  };
+
+  // Show password protection if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <ErrorBoundary>
+        <PasswordProtection onAuthenticated={handleAuthenticated} />
+      </ErrorBoundary>
+    );
+  }
 
   // Show admin gallery if requested
   if (showAdminGallery) {
