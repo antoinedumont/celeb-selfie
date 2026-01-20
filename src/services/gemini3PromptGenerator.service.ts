@@ -86,8 +86,10 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
       location_details: '<SPECIFIC_ENVIRONMENT_DETAILS>',
       thematic_elements: '<KEY_PROPS_OR_BACKGROUND_FEATURES>',
     },
-    lens_effect: 'Wide-angle lens distortion typical of smartphone front cameras, creating slight fisheye effect where faces appear slightly larger in the center',
+    lens_effect: 'Wide-angle lens distortion typical of smartphone front cameras, creating slight fisheye effect where faces appear slightly larger in the center. CRITICAL: This photo is captured BY a smartphone camera, not OF a smartphone camera.',
     composition: 'Faces dominate the frame entirely, showing only head and shoulders in tight framing. Both people\'s faces take up most of the image space.',
+    phone_visibility: 'CRITICAL: The mobile phone/camera device must NEVER be visible in the frame. The photo is taken from the phone\'s perspective, but the phone itself is completely out of frame. This is a photo taken FROM the phone, not a photo OF someone holding a phone.',
+    framing_rules: 'Natural arm\'s-length handheld shot captured from front-facing camera perspective. The phone is held by the photographer but remains entirely outside the visible frame. The framing is a natural arm\'s-length handheld shot; the mobile phone itself is never visible.',
   },
   visual_style: {
     realism: 'photorealistic',
@@ -96,7 +98,7 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     depth_and_scale: 'realistic proportions for all subjects and the background, with slight wide-angle perspective distortion',
   },
   result_description:
-    "A seamless, photorealistic POV selfie taken with a front-facing smartphone camera. The original person and the celebrity are standing together in natural selfie framing, with both faces clearly visible and comfortably composed in the frame. The background is the celebrity's iconic professional environment, but slightly blurred due to the selfie focus. CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything. This is NOT a photo taken by a third person - it is a POV selfie with the camera held at arm's length.",
+    "A seamless, photorealistic POV selfie taken with a front-facing smartphone camera. The original person and the celebrity are standing together in natural selfie framing, with both faces clearly visible and comfortably composed in the frame. The background is the celebrity's iconic professional environment, but slightly blurred due to the selfie focus. CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything. This is NOT a photo taken by a third person - it is a POV selfie with the camera held at arm's length. The mobile phone itself is never visible - this is a photo taken FROM the phone, not a photo OF someone holding a phone.",
 };
 
 /**
@@ -124,6 +126,8 @@ Environment:
 The setting is ${environment.setting_name}. ${environment.location_details}. The scene features ${environment.thematic_elements}.
 ${scene_description.lens_effect ? `\nLens Effect:\n${scene_description.lens_effect}` : ''}
 ${scene_description.composition ? `\nComposition:\n${scene_description.composition}` : ''}
+${scene_description.phone_visibility ? `\nPhone Visibility:\n${scene_description.phone_visibility}` : ''}
+${scene_description.framing_rules ? `\nFraming Rules:\n${scene_description.framing_rules}` : ''}
 
 Visual Style:
 - ${visual_style.realism} quality
@@ -256,6 +260,12 @@ Examples:
 - Input: "Taylor Swift at concert" → Setting: concert stage with lights and audience
 - Input: "Elon Musk in SpaceX factory" → Setting: SpaceX manufacturing facility with rockets
 - Input: "Serena Williams" → Setting: professional tennis court (use default iconic setting)
+
+CRITICAL CONSTRAINT - Phone Visibility:
+The mobile phone/camera device must NEVER appear in the generated image.
+This is a photo taken FROM a front-facing smartphone camera perspective, not a photo OF someone holding a phone.
+The phone is held at arm's length by the photographer but remains completely outside the visible frame.
+The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible.
 
 Return ONLY the completed JSON object with all placeholders filled. Do not include any explanation or additional text.
 

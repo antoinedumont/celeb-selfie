@@ -77,7 +77,9 @@ function getCelebrityDetails(celebrityName: string): { description: string; outf
  * Generates POV selfie prompts by default for authentic selfie experience
  */
 function buildStaticFreestylePrompt(celebrityName: string): string {
-  const prompt = `Ultra-realistic POV selfie photo with ${celebrityName}. POV selfie taken with a front-facing smartphone camera held at arm's length. Wide-angle lens distortion with faces dominating the frame in tight close-up framing typical of authentic POV selfies. They are leaning in close to the camera next to me, smiling naturally, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight front-facing camera flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate selfie framing. High resolution, professional photography quality, with slight wide-angle perspective distortion.
+  const prompt = `Ultra-realistic handheld selfie captured from a front-phone-camera perspective with ${celebrityName}. The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible. POV selfie taken with a front-facing smartphone camera held at arm's length. Wide-angle lens distortion with faces dominating the frame in tight close-up framing typical of authentic POV selfies. They are leaning in close to the camera next to me, smiling naturally, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight front-facing camera flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate selfie framing. High resolution, professional photography quality, with slight wide-angle perspective distortion.
+
+CRITICAL: The camera/phone device must never appear in frame - this is a photo taken FROM the phone perspective, not OF someone holding a phone. The photo is captured BY a smartphone camera, not OF a smartphone camera.
 
 High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion, and a shallow depth of field (bokeh) where the subjects are sharp and the background is slightly soft.
 
@@ -86,7 +88,7 @@ High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion,
 2. Anatomical Exactness: Replicate the subject's facial geometry, hair texture, and grooming exactly as they appear in the photo.
 3. Expression Consistency: Maintain the exact smile intensity and mouth position from the reference (adhering strictly to the closed-mouth, no-teeth-showing expression or bright smile).
 4. Outfit Preservation: Clone the subject's current attire, layers, and fabric textures exactly as seen in the source image. Do not modify the color, type, or style of the clothing. Do not add accessories (like lanyards) to this subject.
-5. No phone visible.`;
+5. No Phone Visible: The mobile device taking the photo must never appear in the generated image. The photo is taken FROM the phone, not OF the phone. The phone is held at arm's length but remains completely outside the visible frame.`;
 
   return prompt;
 }

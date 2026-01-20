@@ -31,6 +31,10 @@ export interface PromptTemplate {
     };
     lens_effect?: string;
     composition?: string;
+    /** Critical constraint: Ensures the mobile phone/camera device never appears in the generated image */
+    phone_visibility?: string;
+    /** Framing rules: Defines the natural arm's-length handheld shot perspective */
+    framing_rules?: string;
   };
   visual_style: {
     realism: string;
