@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Create stunning celebrity selfies with AI. Transform your photos with the magic of artificial intelligence." />
+    <title>Celeb Selfie - AI Celebrity Photo Magic</title>
+
+    <!-- Preload fonts for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Pure Apple fonts: Inter (all weights) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        /* Animated gradient colors inspired by PhotoAI */
+        --gradient-1: #f79533;
+        --gradient-2: #f37055;
+        --gradient-3: #ef4e7b;
+        --gradient-4: #a166ab;
+        --gradient-5: #5073b8;
+        --gradient-6: #1098ad;
+        --gradient-7: #07b39b;
+        --gradient-8: #6fba82;
+
+        /* Accent colors */
+        --accent-fire: #f47353;
+        --accent-lime: #2bde73;
+        --accent-gold: #ffc924;
+
+        /* Base colors */
+        --bg-dark: #0a0a0a;
+        --bg-light: #ffffff;
+        --text-dark: #1c1c1c;
+        --text-light: #ffffff;
+        --text-muted: #808080;
+
+        /* Spacing */
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 1.5rem;
+        --spacing-lg: 2.5rem;
+        --spacing-xl: 4rem;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: #F5F5F7; /* Alabaster White */
+        color: #000000;
+        position: relative;
+        font-weight: 400;
+      }
+
+      /* Animated gradient background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-1) 0%,
+          var(--gradient-2) 12.5%,
+          var(--gradient-3) 25%,
+          var(--gradient-4) 37.5%,
+          var(--gradient-5) 50%,
+          var(--gradient-6) 62.5%,
+          var(--gradient-7) 75%,
+          var(--gradient-8) 100%
+        );
+        background-size: 400% 400%;
+        animation: gradient-shift 15s ease infinite;
+        opacity: 0.15;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* Gradient mesh overlay for depth */
+      body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+          radial-gradient(circle at 20% 50%, rgba(247, 149, 51, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(239, 78, 123, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 40% 20%, rgba(80, 115, 184, 0.15) 0%, transparent 50%);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      @keyframes gradient-shift {
+        0%, 100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      #root {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+
+      /* Loading animation */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-dark);
+        z-index: 9999;
+        animation: fade-out 0.5s ease 0.3s forwards;
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--gradient-3);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes fade-out {
+        to {
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--gradient-3), var(--gradient-5));
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, var(--gradient-2), var(--gradient-4));
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-screen">
+      <div class="loading-spinner"></div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

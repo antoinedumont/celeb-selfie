@@ -1,0 +1,170 @@
+/**
+ * Photo Composite Service Types
+ *
+ * Defines interfaces and types for AI-powered photo compositing services.
+ * Architecture supports multiple AI models (Nano Banana Pro, PhotoMaker, etc.)
+ */
+
+import type { CelebrityGenerationMode } from '../../types';
+
+/**
+ * Supported AI models for photo compositing
+ * Both models now accessed via Replicate API for unified authentication
+ */
+export enum CompositeModel {
+  NANO_BANANA_PRO = 'nano-banana-pro',
+  PHOTOMAKER = 'photomaker',
+  GPT_IMAGE = 'gpt-image-1.5',
+}
+
+/**
+ * Result from a photo composition operation
+ */
+export interface CompositeResult {
+  /** Which AI model was used */
+  model: CompositeModel;
+
+  /** URL to the generated composite image */
+  imageUrl: string;
+
+  /** Processing time in milliseconds */
+  processingTime: number;
+
+  /** Cost of this operation in USD */
+  cost: number;
+
+  /** Whether the operation succeeded */
+  success: boolean;
+
+  /** Error message if operation failed */
+  error?: string;
+
+  /** Additional metadata */
+  metadata?: {
+    predictionId?: string;
+    resolution?: string;
+    promptUsed?: string;
+  };
+}
+
+/**
+ * Configuration for composition
+ */
+export interface CompositionConfig {
+  /** Output resolution (1K, 2K, 4K) */
+  resolution?: '1K' | '2K' | '4K';
+
+  /** Positioning style */
+  positioning?: 'side-by-side' | 'behind' | 'group';
+
+  /** Image quality (0-100) */
+  quality?: number;
+
+  /** Custom prompt additions */
+  customPrompt?: string;
+
+  /** Background composition mode */
+  backgroundMode?: 'two-person' | 'three-person-with-background';
+
+  /** Additional context for background scene */
+  backgroundContext?: string;
+
+  /** Use text-prompt mode instead of image composition for celebrity generation */
+  useTextPromptMode?: boolean;
+
+  /** Generation mode: booth-focused (go1) or casual freestyle */
+  generationMode?: CelebrityGenerationMode;
+}
+
+/**
+ * Progress callback signature
+ */
+export type ProgressCallback = (progress: number) => void;
+
+/**
+ * Abstract interface for photo composite services
+ * All AI model integrations must implement this interface
+ */
+export interface CompositeService {
+  /**
+   * Compose a photo with user and celebrity
+   *
+   * @param userImageDataUrl - User's photo as data URL (base64)
+   * @param celebrityImageUrl - Celebrity image URL or data URL
+   * @param celebrityName - Name of the celebrity for prompt
+   * @param onProgress - Optional callback for progress updates (0-100)
+   * @param config - Optional configuration
+   * @param backgroundImageUrl - Optional background scene image URL or data URL for three-image composition
+   * @returns Promise resolving to composite result
+   */
+  compose(
+    userImageDataUrl: string,
+    celebrityImageUrl: string,
+    celebrityName: string,
+    onProgress?: ProgressCallback,
+    config?: CompositionConfig,
+    backgroundImageUrl?: string
+  ): Promise<CompositeResult>;
+}
+
+/**
+ * Gemini API specific types
+ */
+
+export interface GeminiGenerationConfig {
+  responseModalities: string[];
+  imageConfig: {
+    resolution: string;
+  };
+  thinkingConfig?: {
+    thinkingBudget: number;
+  };
+}
+
+export interface GeminiContentPart {
+  text?: string;
+  inlineData?: {
+    mimeType: string;
+    data: string; // base64 encoded
+  };
+}
+
+export interface GeminiContent {
+  parts: GeminiContentPart[];
+}
+
+export interface GeminiRequest {
+  contents: GeminiContent[];
+  generationConfig: GeminiGenerationConfig;
+}
+
+export interface GeminiResponseCandidate {
+  content: {
+    parts: Array<{
+      text?: string;
+      inlineData?: {
+        mimeType: string;
+        data: string;
+      };
+    }>;
+  };
+}
+
+export interface GeminiResponse {
+  candidates: GeminiResponseCandidate[];
+}
+
+/**
+ * API Error class for composite services
+ */
+export class CompositeAPIError extends Error {
+  constructor(
+    message: string,
+    public statusCode?: number,
+    public model?: CompositeModel,
+    public retryable: boolean = false
+  ) {
+    super(message);
+    this.name = 'CompositeAPIError';
+  }
+}
