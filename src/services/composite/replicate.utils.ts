@@ -255,21 +255,112 @@ export async function submitPrediction(
 }
 
 /**
+ * Cancel a prediction
+ *
+ * Cancels a running prediction to stop wasting GPU resources.
+ * Used when a prediction times out (>120s).
+ */
+async function cancelPrediction(predictionId: string): Promise<void> {
+  console.log(`[Replicate] Cancelling prediction: ${predictionId}`);
+
+  try {
+    const baseUrl = `${REPLICATE_BASE_URL}/predictions/${predictionId}/cancel`;
+
+    if (isProxyEnabled()) {
+      const proxies = getProxyUrls();
+
+      for (const proxyUrl of proxies) {
+        try {
+          const url = getCorsProxyUrlWithProxy(baseUrl, proxyUrl);
+          const response = await fetchWithTimeout(
+            url,
+            {
+              method: 'POST',
+              headers: {
+                ...getAuthHeader(),
+                ...getProxyHeaders(),
+              },
+            },
+            POLL_FETCH_TIMEOUT
+          );
+
+          if (response.ok) {
+            console.log(`[Replicate] ✅ Prediction cancelled successfully`);
+            recordProxySuccess(proxyUrl);
+            return;
+          }
+        } catch (error) {
+          recordProxyFailure(proxyUrl);
+          continue; // Try next proxy
+        }
+      }
+    } else {
+      // Direct request without proxy
+      const response = await fetchWithTimeout(
+        baseUrl,
+        {
+          method: 'POST',
+          headers: getAuthHeader(),
+        },
+        POLL_FETCH_TIMEOUT
+      );
+
+      if (response.ok) {
+        console.log(`[Replicate] ✅ Prediction cancelled successfully`);
+        return;
+      }
+    }
+
+    // If we get here, cancellation failed but don't throw - continue with timeout error
+    console.warn(`[Replicate] ⚠️  Failed to cancel prediction, but continuing...`);
+  } catch (error) {
+    // Log but don't throw - cancellation is best-effort
+    console.warn(`[Replicate] ⚠️  Error cancelling prediction:`, error);
+  }
+}
+
+/**
  * Poll a prediction until it completes with proxy failover
  *
  * Fallback for when Prefer: wait times out.
  * Polls every 2 seconds for up to 120 seconds.
  * Uses timeout protection and proxy failover.
+ * Emits progress warnings at 60s, 90s thresholds.
+ * Auto-cancels predictions at 120s timeout.
  */
 async function pollPrediction(
   predictionId: string,
   onProgress?: ProgressCallback
 ): Promise<ReplicatePrediction> {
   const maxAttempts = 60; // 60 * 2s = 120s max (Nano Banana can take 75-90s)
+  const startTime = Date.now();
   let attempts = 0;
+  let hasWarned60s = false;
+  let hasWarned90s = false;
 
   while (attempts < maxAttempts) {
     await delay(2000); // Wait 2 seconds between polls
+
+    // Calculate elapsed time
+    const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+
+    // Emit progress warnings at thresholds
+    if (elapsedSeconds >= 60 && !hasWarned60s) {
+      console.warn(`[Replicate] ⏳ Processing is taking longer than usual (${elapsedSeconds}s elapsed)`);
+      hasWarned60s = true;
+    }
+
+    if (elapsedSeconds >= 90 && !hasWarned90s) {
+      console.warn(`[Replicate] ⏳ Still processing... (${elapsedSeconds}s elapsed, up to 120s max)`);
+      hasWarned90s = true;
+    }
+
+    // Check for timeout
+    if (elapsedSeconds >= 120) {
+      console.error(`[Replicate] ⏰ Timeout reached after ${elapsedSeconds}s, cancelling prediction...`);
+      await cancelPrediction(predictionId);
+      throw new Error('Generation took longer than expected and was cancelled. The AI service is experiencing delays. Please try again - it usually works on the second attempt!');
+    }
 
     const baseUrl = `${REPLICATE_BASE_URL}/predictions/${predictionId}`;
 
@@ -346,7 +437,9 @@ async function pollPrediction(
     attempts++;
   }
 
-  throw new Error('Prediction timed out after 120 seconds');
+  // This should not be reached due to elapsedSeconds check, but just in case
+  await cancelPrediction(predictionId);
+  throw new Error('Generation took longer than expected and was cancelled. The AI service is experiencing delays. Please try again - it usually works on the second attempt!');
 }
 
 /**

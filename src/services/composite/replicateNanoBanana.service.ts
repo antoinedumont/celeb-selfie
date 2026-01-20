@@ -28,6 +28,7 @@ import {
   extractImageUrl,
 } from './replicate.utils';
 import { loadBoothTemplateImage } from '../../utils/image.utils';
+import { retryWithBackoff, RetryPresets } from './retry.utils';
 
 // Model identifier on Replicate
 const MODEL_PATH = 'google/nano-banana-pro';
@@ -130,16 +131,34 @@ export class ReplicateNanoBananaService implements CompositeService {
 
       onProgress?.(15);
 
-      // Submit prediction to Replicate (will wait up to 60s)
-      console.log('[Nano Banana Pro - Replicate] Submitting to Replicate API...');
-      const prediction = await submitPrediction(
-        MODEL_PATH,
-        input,
-        (p) => {
-          // Map progress from submitPrediction (10-90) to our range (15-85)
-          onProgress?.(15 + (p / 100) * 70);
+      // Submit prediction to Replicate with retry logic
+      console.log('[Nano Banana Pro - Replicate] Submitting to Replicate API with retry protection...');
+      const replicateStartTime = Date.now();
+
+      const prediction = await retryWithBackoff(
+        async () => {
+          console.log('[Nano Banana Pro - Replicate] Attempting Replicate API call...');
+          return await submitPrediction(
+            MODEL_PATH,
+            input,
+            (p) => {
+              // Map progress from submitPrediction (10-90) to our range (15-85)
+              onProgress?.(15 + (p / 100) * 70);
+            }
+          );
+        },
+        {
+          ...RetryPresets.standard, // 2 retries with exponential backoff
+          onRetry: (attempt, error, delayMs) => {
+            console.log(`[Nano Banana Pro - Replicate] 🔄 Retry attempt ${attempt} after ${(delayMs / 1000).toFixed(1)}s delay`);
+            console.log(`[Nano Banana Pro - Replicate] Previous error: ${error.message}`);
+            onProgress?.(15); // Reset progress for retry attempt
+          },
         }
       );
+
+      const replicateTotalTime = Date.now() - replicateStartTime;
+      console.log(`[Nano Banana Pro - Replicate] ⏱️  Replicate API completed in ${replicateTotalTime}ms`);
 
       onProgress?.(85);
 
