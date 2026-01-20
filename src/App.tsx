@@ -213,38 +213,36 @@ function App() {
 
         {/* Desktop centered container */}
         <div className="w-full max-w-full sm:max-w-[540px] lg:max-w-[680px] flex flex-col">
-          {/* Header - Minimalist Apple Style */}
-          <header className="apple-glass-strong sticky top-0 z-40 backdrop-blur-xl">
-            <div className="px-4 sm:px-6 py-5">
-              <div className="flex items-center justify-center relative">
-                {/* Logo - Centered & Minimal */}
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">✨</div>
-                  <h1 className="text-xl sm:text-2xl text-apple font-inter font-bold">
-                    Celeb Selfie
-                  </h1>
-                </div>
+          {/* Header - Minimalist Apple Style (Hidden on camera step) */}
+          {step !== 'camera' && (
+            <header className="apple-glass-strong sticky top-0 z-40 backdrop-blur-xl">
+              <div className="px-4 sm:px-6 py-5">
+                <div className="flex items-center justify-center relative">
+                  {/* Logo - Centered & Minimal */}
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">✨</div>
+                    <h1 className="text-xl sm:text-2xl text-apple font-inter font-bold">
+                      Celeb Selfie
+                    </h1>
+                  </div>
 
-                {/* Status Badge - Minimal dot indicator */}
-                {step !== 'camera' && (
+                  {/* Status Badge - Minimal dot indicator */}
                   <div className="absolute right-0 hud-apple text-xs">
                     {step === 'select' && 'Select'}
                     {step === 'processing' && 'Creating'}
                     {step === 'result' && 'Done'}
                     {step === 'error' && 'Error'}
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          </header>
+            </header>
+          )}
 
           {/* Main Content */}
           <main className="flex-1 flex flex-col justify-center py-4">
-            {/* Camera Step */}
+            {/* Camera Step - Full screen, no padding */}
             {step === 'camera' && (
-              <div className="px-4">
-                <Camera onCapture={handleCapture} />
-              </div>
+              <Camera onCapture={handleCapture} />
             )}
 
             {/* Celebrity Input Step */}

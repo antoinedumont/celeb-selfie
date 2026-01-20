@@ -898,6 +898,79 @@ body {
   display: block;
 }
 
+/* Camera Shutter Overlay - iOS Camera Style */
+.camera-shutter-overlay {
+  width: 90px;
+  height: 90px;
+  min-width: 90px;
+  min-height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF3B30 0%, #FF2D23 100%);
+  border: 6px solid white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: visible;
+}
+
+.camera-shutter-overlay::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.camera-shutter-overlay:hover::before {
+  opacity: 1;
+}
+
+.camera-shutter-overlay:active {
+  transform: scale(0.9);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.camera-shutter-overlay:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+}
+
+/* Camera Title Overlay - Top */
+.camera-title-overlay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.01em;
+}
+
+/* Camera Video Dezoom */
+.camera-video-dezoom {
+  transform: scale(0.88);
+  transform-origin: center center;
+}
+
 /* Smooth Animations - Spring Physics */
 @keyframes spring-in {
   0% {
