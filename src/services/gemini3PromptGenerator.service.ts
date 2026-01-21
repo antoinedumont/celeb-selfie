@@ -53,6 +53,7 @@ export const BASE_JSON_TEMPLATE: PromptTemplate = {
       location_details: '<SPECIFIC_ENVIRONMENT_DETAILS>',
       thematic_elements: '<KEY_PROPS_OR_BACKGROUND_FEATURES>',
     },
+    height_proportions: 'Preserve realistic height differences between original person and celebrity based on their actual heights. Taller person naturally appears with head higher in frame, shorter person with head lower. DO NOT artificially equalize heights.',
   },
   visual_style: {
     realism: 'photorealistic',
@@ -94,6 +95,7 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     composition: 'Faces dominate the frame entirely, showing only head and shoulders in tight framing. Both people\'s faces take up most of the image space.',
     phone_visibility: 'CRITICAL: The mobile phone/camera device must NEVER be visible in the frame. The photo is taken from the phone\'s perspective, but the phone itself is completely out of frame. This is a photo taken FROM the phone, not a photo OF someone holding a phone.',
     framing_rules: 'Natural arm\'s-length handheld shot captured from front-facing camera perspective. The phone is held by the photographer but remains entirely outside the visible frame. The framing is a natural arm\'s-length handheld shot; the mobile phone itself is never visible.',
+    height_proportions: 'Preserve realistic height differences between original person and celebrity based on their actual heights. Taller person naturally appears with head higher in frame, shorter person with head lower. DO NOT artificially equalize heights.',
   },
   visual_style: {
     realism: 'photorealistic',
@@ -127,6 +129,7 @@ CRITICAL - Original Person Preservation:
 ${original_person.pose}
 ${original_person.visual_integrity}
 ${original_person.expression_priority ? `\n${original_person.expression_priority}` : ''}
+${scene_description.height_proportions ? `\nHeight Proportions:\n${scene_description.height_proportions}` : ''}
 
 Environment:
 The setting is ${environment.setting_name}. ${environment.location_details}. The scene features ${environment.thematic_elements}.
@@ -258,6 +261,15 @@ When filling this template, ensure the original person's facial expression is pr
 - The person's appearance is a LOCKED CONSTANT, never modified for scene coherence
 - DO NOT suggest modifying their expression, smile, mouth state, or facial features
 
+CRITICAL HEIGHT & PROPORTION PRESERVATION:
+When filling the template, preserve realistic height and size differences:
+- If the celebrity is notably tall (6'0"+/183cm+), their head should appear higher in frame
+- If the celebrity is notably short (under 5'7"/170cm), their head should appear lower in frame
+- In POV selfies, taller people naturally appear slightly above eye level
+- Shoulder heights should reflect actual height differences
+- DO NOT artificially equalize heights - preserve natural proportions
+- Camera angle may naturally tilt slightly up/down based on height differences
+
 IMPORTANT: The input may contain both a celebrity name AND context (e.g., "Taylor Swift at concert", "Elon Musk in SpaceX factory").
 Parse the input to identify:
 1. The celebrity's actual name (e.g., "Taylor Swift", "Elon Musk")
@@ -270,16 +282,21 @@ Fill in the placeholders in this JSON template:
 - Replace <SPECIFIC_ENVIRONMENT_DETAILS> with vivid, detailed description of that setting
 - Replace <KEY_PROPS_OR_BACKGROUND_FEATURES> with relevant props and features for that environment
 - Replace <PHYSICAL_APPEARANCE_DETAILS> with detailed physical description of the celebrity:
+  * Height & Build: CRITICAL - Include specific height category with build type:
+    - Very tall (6'3"+/190cm+): "very tall build, towering presence, notably taller than most people"
+    - Tall (5'11"-6'2"/180-189cm): "tall athletic build, stands above average height"
+    - Average (5'7"-5'10"/170-179cm): "average height build, medium stature"
+    - Shorter (5'3"-5'6"/160-169cm): "petite build, shorter than average stature"
+    - Very short (<5'3"/<160cm): "very petite build, notably shorter than most people"
   * Hair: color, length, style, distinctive features (e.g., "blonde hair with signature bangs", "short dark hair")
   * Face: shape, distinctive features, typical expression (e.g., "fair complexion", "athletic facial structure")
-  * Build: height indicators, body type (e.g., "tall lean build", "athletic physique", "petite frame")
   * Signature look: fashion style, typical outfit choices (e.g., "elegant feminine style with sophisticated dresses", "casual tech entrepreneur aesthetic")
   * Distinguishing marks: notable accessories, signature items (e.g., "red lipstick", "signature tattoos")
 
 Physical Description Examples:
-- "Taylor Swift" → "blonde hair with signature bangs, fair complexion, red lipstick, elegant feminine style, typically wears sophisticated dresses or blazers"
-- "Elon Musk" → "short dark hair, clean-shaven or light stubble, tech entrepreneur aesthetic, casual t-shirts or business casual, tall lean build"
-- "Serena Williams" → "athletic build, powerful presence, natural curly hair often in braids, confident expression, typically wears athletic or elegant sporty attire"
+- "Taylor Swift" → "tall slender build (5'11"/180cm), blonde hair with signature bangs, fair complexion, red lipstick, elegant feminine style, typically wears sophisticated dresses or blazers"
+- "Elon Musk" → "tall lean build (6'2"/188cm), short dark hair, clean-shaven or light stubble, tech entrepreneur aesthetic, casual t-shirts or business casual"
+- "Serena Williams" → "tall athletic build (5'9"/175cm), powerful presence, natural curly hair often in braids, confident expression, typically wears athletic or elegant sporty attire"
 
 Examples:
 - Input: "Taylor Swift at concert" → Setting: concert stage with lights and audience

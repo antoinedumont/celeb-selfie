@@ -13,50 +13,51 @@ import { generateCelebrityPromptWithGemini3 } from '../gemini3PromptGenerator.se
 /**
  * Celebrity-specific descriptions for natural integration
  * Based on distinctive features and typical appearance
+ * Heights researched from reliable sources (Wikipedia, CelebHeights.com)
  */
 const CELEBRITY_DESCRIPTIONS: Record<string, { description: string; outfit: string }> = {
   'Taylor Swift': {
-    description: 'world-famous blonde pop superstar known for her signature red lipstick and chic fringe bangs',
+    description: 'world-famous blonde pop superstar with tall slender build (5\'11"/180cm), known for her signature red lipstick and chic fringe bangs',
     outfit: 'tailored, oversized beige blazer over a simple black top',
   },
   'Lionel Messi': {
-    description: 'legendary Argentine footballer with his distinctive short beard and athletic build',
+    description: 'legendary Argentine footballer with shorter athletic build (5\'7"/170cm), compact powerful physique, his distinctive short beard',
     outfit: 'casual button-down shirt in light blue',
   },
   'Cristiano Ronaldo': {
-    description: 'world-renowned Portuguese footballer known for his athletic physique and groomed appearance',
+    description: 'world-renowned Portuguese footballer with tall athletic build (6\'2"/188cm), imposing presence, known for his athletic physique and groomed appearance',
     outfit: 'fitted designer polo shirt',
   },
   'LeBron James': {
-    description: 'towering NBA basketball icon known for his powerful presence and charismatic smile',
+    description: 'towering NBA basketball icon with very tall powerful build (6\'9"/206cm), towering presence, known for his powerful physique and charismatic smile',
     outfit: 'premium athletic-style polo in dark colors',
   },
   'Beyoncé': {
-    description: 'iconic performer known for her radiant smile, long flowing hair, and commanding presence',
+    description: 'iconic performer with average height and powerful stage presence (5\'7"/170cm), known for her radiant smile, long flowing hair, and commanding presence',
     outfit: 'elegant blazer with subtle jewelry',
   },
   'Dwayne Johnson': {
-    description: 'muscular actor and former wrestler known for his signature bald head and warm smile',
+    description: 'muscular actor and former wrestler with very tall muscular build (6\'5"/196cm), towering imposing presence, signature bald head and warm smile',
     outfit: 'fitted black t-shirt showing his athletic build',
   },
   'Barack Obama': {
-    description: '44th U.S. President known for his distinguished appearance and warm, professional demeanor',
+    description: '44th U.S. President with tall distinguished presence (6\'1"/185cm), known for his warm, professional demeanor',
     outfit: 'crisp dress shirt with rolled-up sleeves',
   },
   'Elon Musk': {
-    description: 'tech entrepreneur known for his casual style and forward-thinking presence',
+    description: 'tech entrepreneur with tall lean build (6\'2"/188cm), known for his casual style and forward-thinking presence',
     outfit: 'simple black t-shirt or casual blazer',
   },
   'Sam Altman': {
-    description: 'OpenAI CEO known for his youthful appearance and tech industry presence',
+    description: 'OpenAI CEO with average height build (5\'9"/175cm), known for his youthful appearance and tech industry presence',
     outfit: 'casual button-down shirt or tech-startup hoodie',
   },
   'Oprah Winfrey': {
-    description: 'media mogul known for her warm smile, elegant style, and commanding presence',
+    description: 'media mogul with average height commanding presence (5\'7"/170cm), known for her warm smile and elegant style',
     outfit: 'sophisticated blouse or tailored jacket',
   },
   'Albert Einstein': {
-    description: 'legendary physicist with his iconic wild white hair and mustache',
+    description: 'legendary physicist with average height build and distinctive posture (5\'9"/175cm), iconic wild white hair and mustache',
     outfit: 'rumpled cardigan over a simple shirt',
   },
 };
@@ -83,6 +84,7 @@ function buildStaticFreestylePrompt(celebrityName: string): string {
 3. IDENTITY ANCHOR: The person's face is a non-negotiable visual constant. Replicate facial geometry, proportions, bone structure, skin texture, and all features EXACTLY. Zero modifications allowed.
 4. OUTFIT PRESERVATION: Clone clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change attire to match environment or scene context.
 5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify clothing style or add accessories.
+6. HEIGHT & PROPORTION PRESERVATION: Preserve realistic height differences between the original person and celebrity. If the celebrity is notably tall (e.g., basketball player, Rafael Nadal), their face/head should appear naturally higher in the frame. If celebrity is shorter, their face should appear lower. DO NOT artificially equalize heights - maintain natural proportions that would occur in a real arm's-length selfie.
 
 Ultra-realistic handheld selfie captured from a front-phone-camera perspective with ${celebrityName}. The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible. POV selfie taken with a front-facing smartphone camera held at arm's length. Wide-angle lens distortion with faces dominating the frame in tight close-up framing typical of authentic POV selfies. They are leaning in close to the camera next to me, naturally positioned, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight front-facing camera flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate selfie framing. High resolution, professional photography quality, with slight wide-angle perspective distortion.
 
@@ -176,7 +178,7 @@ export function buildCelebritySelfiePrompt(
 
 The Scene: Ultra-realistic handheld selfie captured from a front-phone-camera perspective at the Learning Technologies Paris exhibition (Porte de Versailles). The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible.
 
-The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, naturally positioned and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
+The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, naturally positioned based on their actual height (respect height differences - taller celebrities naturally appear taller in frame), and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
 
 The Go1 Paris Booth (Visual Match): The background is a precise replica of the Go1 stand from the reference image.
 
@@ -185,6 +187,8 @@ Foreground: The suspended Go1 banner is on the frame
 Environment: The floor is light wood-grain laminate. Above us, the dark industrial ceiling of the hall is visible with silver lighting trusses and hanging purple "Learning Technologies" banners.
 
 The Technical Detail: The lighting is a realistic mix of the booth's warm yellow glow and the bright, cool-toned overhead exhibition hall LEDs. This creates authentic skin textures, minor imperfections, and a slight glint on the lanyard plastic. High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion, and a shallow depth of field (bokeh) where the subjects are sharp and the booth background is slightly soft. No phone visible.
+
+Height Proportions: Preserve realistic height differences between the original person and ${celebrityName}. Their relative heights should reflect natural physical proportions. Taller celebrities should appear with head naturally higher in frame, shorter celebrities with head lower. DO NOT artificially equalize heights.
 
 [REINFORCEMENT - ORIGINAL PERSON PRESERVATION]:
 REMINDER: The input person's face and clothing must remain EXACTLY as shown - same expression level, same mouth state (open/closed), same facial features, same outfit. This is NON-NEGOTIABLE and takes absolute precedence over conference context.`;

@@ -37,6 +37,8 @@ export interface PromptTemplate {
     phone_visibility?: string;
     /** Framing rules: Defines the natural arm's-length handheld shot perspective */
     framing_rules?: string;
+    /** Height proportion preservation instructions */
+    height_proportions?: string;
   };
   visual_style: {
     realism: string;
