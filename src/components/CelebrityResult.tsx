@@ -22,6 +22,12 @@ export const CelebrityResult = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [cloudinaryUrl, setCloudinaryUrl] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Determine if we have multiple images
+  const hasMultipleImages = result.imageUrls && result.imageUrls.length > 1;
+  const displayImages = hasMultipleImages ? result.imageUrls : [result.imageUrl];
+  const currentImage = displayImages[selectedImageIndex];
 
   // Check for Cloudinary URL periodically (it uploads in background)
   useEffect(() => {
@@ -47,17 +53,19 @@ export const CelebrityResult = ({
   }, []);
 
   const handleDownload = async () => {
-    if (!result.imageUrl) return;
+    const imageToDownload = currentImage;
+    if (!imageToDownload) return;
 
     setIsDownloading(true);
     try {
-      const response = await fetch(result.imageUrl);
+      const response = await fetch(imageToDownload);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement('a');
       link.href = url;
-      link.download = `celeb-selfie-${celebrityName.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.png`;
+      const suffix = hasMultipleImages ? `-v${selectedImageIndex + 1}` : '';
+      link.download = `celeb-selfie-${celebrityName.replace(/\s+/g, '-').toLowerCase()}${suffix}-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -89,25 +97,114 @@ export const CelebrityResult = ({
           <div className="text-center mb-8">
             <div className="text-6xl mb-4 animate-bounce" aria-hidden="true">🎉</div>
             <h1 className="text-4xl sm:text-5xl font-black text-gradient mb-3" role="status">
-              Your Celeb Selfie!
+              Your Celeb Selfie{hasMultipleImages ? 's' : ''}!
             </h1>
             <p className="text-lg text-white/70">
               Created with <span className="font-bold text-gradient">{celebrityName}</span>
+              {hasMultipleImages && ' (2 variations)'}
             </p>
           </div>
 
-          {/* Result Image */}
-          <div className="card p-2 sm:p-4 mb-6 glow-border scale-in">
-            <div className="relative rounded-2xl overflow-hidden">
-              <img
-                src={result.imageUrl}
-                alt={`Selfie with ${celebrityName}`}
-                className="w-full h-auto"
-              />
-              {/* Gradient overlay for polish */}
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+          {/* Result Image(s) */}
+          {hasMultipleImages ? (
+            <div className="mb-6">
+              {/* Desktop: Side-by-side */}
+              <div className="hidden sm:grid sm:grid-cols-2 gap-4">
+                {displayImages.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className={`card p-2 cursor-pointer transition-all duration-300 ${
+                      selectedImageIndex === index
+                        ? 'glow-border ring-4 ring-brand-orange scale-in'
+                        : 'opacity-60 hover:opacity-80'
+                    }`}
+                    onClick={() => setSelectedImageIndex(index)}
+                    role="button"
+                    aria-label={`Select variation ${index + 1}`}
+                    aria-pressed={selectedImageIndex === index}
+                  >
+                    <div className="relative rounded-2xl overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={`Selfie with ${celebrityName} - Variation ${index + 1}`}
+                        className="w-full h-auto"
+                      />
+                      {/* Selection indicator */}
+                      {selectedImageIndex === index && (
+                        <div className="absolute top-3 right-3 bg-brand-orange text-white px-3 py-1 rounded-full text-sm font-bold">
+                          Selected ✓
+                        </div>
+                      )}
+                      {/* Variation number badge */}
+                      <div className="absolute top-3 left-3 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                        Variation {index + 1}
+                      </div>
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile: Stacked with radio selection */}
+              <div className="sm:hidden space-y-4">
+                {displayImages.map((imageUrl, index) => (
+                  <div key={index} className="space-y-2">
+                    <div
+                      className={`card p-2 cursor-pointer transition-all ${
+                        selectedImageIndex === index
+                          ? 'glow-border ring-2 ring-brand-orange'
+                          : ''
+                      }`}
+                      onClick={() => setSelectedImageIndex(index)}
+                    >
+                      <div className="relative rounded-2xl overflow-hidden">
+                        <img
+                          src={imageUrl}
+                          alt={`Variation ${index + 1}`}
+                          className="w-full h-auto"
+                        />
+                        <div className="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                          Variation {index + 1}
+                        </div>
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+                      </div>
+                    </div>
+                    {/* Radio button for mobile */}
+                    <label className="flex items-center gap-2 text-white cursor-pointer justify-center">
+                      <input
+                        type="radio"
+                        name="image-selection"
+                        checked={selectedImageIndex === index}
+                        onChange={() => setSelectedImageIndex(index)}
+                        className="w-5 h-5"
+                      />
+                      <span className="text-sm">Use this version</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              {/* Selection hint */}
+              <p className="text-center text-white/60 text-sm mt-4">
+                Pick your favorite - download or share the one you like best!
+              </p>
             </div>
-          </div>
+          ) : (
+            /* Single image display (backward compatible) */
+            <div className="card p-2 sm:p-4 mb-6 glow-border scale-in">
+              <div className="relative rounded-2xl overflow-hidden">
+                <img
+                  src={result.imageUrl}
+                  alt={`Selfie with ${celebrityName}`}
+                  className="w-full h-auto"
+                />
+                {/* Gradient overlay for polish */}
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+              </div>
+            </div>
+          )}
 
           {/* Cloudinary Share Link */}
           {cloudinaryUrl ? (

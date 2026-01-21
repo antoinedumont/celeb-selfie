@@ -24,8 +24,11 @@ export interface CompositeResult {
   /** Which AI model was used */
   model: CompositeModel;
 
-  /** URL to the generated composite image */
+  /** URL to the generated composite image (primary/first image) */
   imageUrl: string;
+
+  /** Array of all generated image URLs (when num_outputs > 1) */
+  imageUrls?: string[];
 
   /** Processing time in milliseconds */
   processingTime: number;
@@ -44,6 +47,9 @@ export interface CompositeResult {
     predictionId?: string;
     resolution?: string;
     promptUsed?: string;
+    mode?: string;
+    imageInputCount?: number;
+    numOutputs?: number;
   };
 }
 

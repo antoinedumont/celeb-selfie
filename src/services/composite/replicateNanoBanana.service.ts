@@ -36,6 +36,9 @@ const MODEL_PATH = 'google/nano-banana-pro';
 // Cost per image (Replicate pricing)
 const COST_PER_IMAGE = 0.15;
 
+// Number of output images to generate
+const NUM_OUTPUTS = 2;
+
 export class ReplicateNanoBananaService implements CompositeService {
   // Cached booth template image (loaded once, reused for all compositions)
   private boothTemplateDataUrl: string | null = null;
@@ -61,10 +64,13 @@ export class ReplicateNanoBananaService implements CompositeService {
     const mode = config?.generationMode || 'go1';
     const shouldIncludeBooth = mode === 'go1';
 
+    const totalCost = COST_PER_IMAGE * NUM_OUTPUTS;
+
     console.log('[Nano Banana Pro - Replicate] Starting composition...');
     console.log(`[Nano Banana Pro - Replicate] Celebrity: ${celebrityName}`);
     console.log(`[Nano Banana Pro - Replicate] Generation mode: ${mode.toUpperCase()}`);
-    console.log(`[Nano Banana Pro - Replicate] Cost: $${COST_PER_IMAGE.toFixed(3)}`);
+    console.log(`[Nano Banana Pro - Replicate] Generating ${NUM_OUTPUTS} images`);
+    console.log(`[Nano Banana Pro - Replicate] Cost: $${totalCost.toFixed(2)} (${NUM_OUTPUTS} × $${COST_PER_IMAGE})`);
 
     try {
       onProgress?.(5);
@@ -114,6 +120,7 @@ export class ReplicateNanoBananaService implements CompositeService {
         aspect_ratio: '2:3', // Portrait format for realistic selfies
         resolution: this.mapResolution(config?.resolution || '2K'),
         output_format: 'png',
+        num_outputs: NUM_OUTPUTS, // Generate 2 images for user to choose from
       };
 
       // Add reference images based on mode
@@ -162,15 +169,23 @@ export class ReplicateNanoBananaService implements CompositeService {
 
       onProgress?.(85);
 
-      // Extract image URL from output
-      const imageUrl = extractImageUrl(prediction.output);
-      console.log(`[Nano Banana Pro - Replicate] Image URL received: ${imageUrl}`);
+      // Extract image URLs from output (handles both single and multiple outputs)
+      const imageUrls = Array.isArray(prediction.output)
+        ? prediction.output
+        : [prediction.output].filter(Boolean);
 
-      onProgress?.(90);
+      console.log(`[Nano Banana Pro - Replicate] Received ${imageUrls.length} image URLs`);
 
-      // Fetch image and convert to data URL
-      console.log('[Nano Banana Pro - Replicate] Fetching and converting image...');
-      const imageDataUrl = await fetchImageAsDataUrl(imageUrl);
+      onProgress?.(87);
+
+      // Fetch all images and convert to data URLs
+      console.log('[Nano Banana Pro - Replicate] Fetching and converting images...');
+      const imageDataUrls = await Promise.all(
+        imageUrls.map((url, index) => {
+          console.log(`[Nano Banana Pro - Replicate] Fetching image ${index + 1}/${imageUrls.length}: ${url}`);
+          return fetchImageAsDataUrl(url);
+        })
+      );
 
       const processingTime = Date.now() - startTime;
       onProgress?.(100);
@@ -179,9 +194,10 @@ export class ReplicateNanoBananaService implements CompositeService {
 
       return {
         model: CompositeModel.NANO_BANANA_PRO,
-        imageUrl: imageDataUrl,
+        imageUrl: imageDataUrls[0], // Primary image (backward compatible)
+        imageUrls: imageDataUrls, // All images (new field)
         processingTime,
-        cost: COST_PER_IMAGE,
+        cost: totalCost, // Updated to reflect multiple images
         success: true,
         metadata: {
           predictionId: prediction.id,
@@ -189,6 +205,7 @@ export class ReplicateNanoBananaService implements CompositeService {
           promptUsed: displayPrompt, // Store the natural language prompt for display
           mode: config?.generationMode || 'go1', // Track generation mode
           imageInputCount: shouldIncludeBooth ? 2 : 1, // Track how many images were sent
+          numOutputs: NUM_OUTPUTS, // Track how many images were requested
         },
       };
     } catch (error) {

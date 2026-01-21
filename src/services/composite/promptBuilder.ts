@@ -77,18 +77,21 @@ function getCelebrityDetails(celebrityName: string): { description: string; outf
  * Generates POV selfie prompts by default for authentic selfie experience
  */
 function buildStaticFreestylePrompt(celebrityName: string): string {
-  const prompt = `Ultra-realistic handheld selfie captured from a front-phone-camera perspective with ${celebrityName}. The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible. POV selfie taken with a front-facing smartphone camera held at arm's length. Wide-angle lens distortion with faces dominating the frame in tight close-up framing typical of authentic POV selfies. They are leaning in close to the camera next to me, smiling naturally, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight front-facing camera flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate selfie framing. High resolution, professional photography quality, with slight wide-angle perspective distortion.
+  const prompt = `[CRITICAL FACIAL PRESERVATION - HIGHEST PRIORITY]:
+1. FREEZE FACIAL EXPRESSION: Lock the exact expression from the reference image. If mouth is closed, keep it closed. If neutral, keep it neutral. If smiling, replicate the exact smile intensity. DO NOT alter expression to match scene mood or celebrity personality.
+2. STRICT ANATOMICAL LOCK: Preserve mouth position (open/closed), lip shape, teeth visibility (show/hide), eye openness, eyebrow position, and facial muscle tension exactly as shown in reference. Clone every facial feature with photographic precision.
+3. IDENTITY ANCHOR: The person's face is a non-negotiable visual constant. Replicate facial geometry, proportions, bone structure, skin texture, and all features EXACTLY. Zero modifications allowed.
+4. OUTFIT PRESERVATION: Clone clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change attire to match environment or scene context.
+5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify clothing style or add accessories.
+
+Ultra-realistic handheld selfie captured from a front-phone-camera perspective with ${celebrityName}. The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible. POV selfie taken with a front-facing smartphone camera held at arm's length. Wide-angle lens distortion with faces dominating the frame in tight close-up framing typical of authentic POV selfies. They are leaning in close to the camera next to me, naturally positioned, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight front-facing camera flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate selfie framing. High resolution, professional photography quality, with slight wide-angle perspective distortion.
 
 CRITICAL: The camera/phone device must never appear in frame - this is a photo taken FROM the phone perspective, not OF someone holding a phone. The photo is captured BY a smartphone camera, not OF a smartphone camera.
 
 High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion, and a shallow depth of field (bokeh) where the subjects are sharp and the background is slightly soft.
 
-[CORE IDENTITY & VISUAL ANCHOR]:
-1. Primary Subject: Treat the individual in the attached source image as a fixed, non-negotiable asset.
-2. Anatomical Exactness: Replicate the subject's facial geometry, hair texture, and grooming exactly as they appear in the photo.
-3. Expression Consistency: Maintain the exact smile intensity and mouth position from the reference (adhering strictly to the closed-mouth, no-teeth-showing expression or bright smile).
-4. Outfit Preservation: Clone the subject's current attire, layers, and fabric textures exactly as seen in the source image. Do not modify the color, type, or style of the clothing. Do not add accessories (like lanyards) to this subject.
-5. No Phone Visible: The mobile device taking the photo must never appear in the generated image. The photo is taken FROM the phone, not OF the phone. The phone is held at arm's length but remains completely outside the visible frame.`;
+[REINFORCEMENT - ORIGINAL PERSON PRESERVATION]:
+REMINDER: The input person's face must remain EXACTLY as shown - same expression level, same mouth state (open/closed), same facial features, same clothing. This is a NON-NEGOTIABLE requirement that takes absolute precedence over scene context.`;
 
   return prompt;
 }
@@ -164,15 +167,16 @@ export function buildCelebritySelfiePrompt(
 
   const prompt = `adapt it for ${celebrityName}
 
-[CORE IDENTITY & VISUAL ANCHOR]:
-1. Primary Subject: Treat the individual in the attached source image as a fixed, non-negotiable asset.
-2. Anatomical Exactness: Replicate the subject's facial geometry, hair texture, and grooming exactly as they appear in the photo.
-3. Expression Consistency: Maintain the exact smile intensity and mouth position from the reference (adhering strictly to the closed-mouth, no-teeth-showing expression or bright smile).
-4. Outfit Preservation: Clone the subject's current attire, layers, and fabric textures exactly as seen in the source image. Do not modify the color, type, or style of the clothing. Do not add accessories (like lanyards) to this subject.
+[CRITICAL FACIAL PRESERVATION - HIGHEST PRIORITY]:
+1. FREEZE FACIAL EXPRESSION: Lock the exact expression from the reference image. If mouth is closed, keep it closed. If neutral, keep it neutral. If smiling, replicate the exact smile intensity. DO NOT alter expression to match scene mood, conference setting, or celebrity personality.
+2. STRICT ANATOMICAL LOCK: Preserve mouth position (open/closed), lip shape, teeth visibility (show/hide), eye openness, eyebrow position, and facial muscle tension exactly as shown in reference. Clone every facial feature with photographic precision.
+3. IDENTITY ANCHOR: The person's face is a non-negotiable visual constant. Replicate facial geometry, proportions, bone structure, skin texture, and all features EXACTLY. Zero modifications allowed.
+4. OUTFIT PRESERVATION: Clone the person's current clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change their attire to match the conference setting or add conference accessories (like lanyards) to this person.
+5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify their clothing style or add conference accessories to them.
 
 The Scene: Ultra-realistic handheld selfie captured from a front-phone-camera perspective at the Learning Technologies Paris exhibition (Porte de Versailles). The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible.
 
-The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, smiling warmly and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
+The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, naturally positioned and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
 
 The Go1 Paris Booth (Visual Match): The background is a precise replica of the Go1 stand from the reference image.
 
@@ -180,7 +184,10 @@ Foreground: The suspended Go1 banner is on the frame
 
 Environment: The floor is light wood-grain laminate. Above us, the dark industrial ceiling of the hall is visible with silver lighting trusses and hanging purple "Learning Technologies" banners.
 
-The Technical Detail: The lighting is a realistic mix of the booth's warm yellow glow and the bright, cool-toned overhead exhibition hall LEDs. This creates authentic skin textures, minor imperfections, and a slight glint on the lanyard plastic. High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion, and a shallow depth of field (bokeh) where the subjects are sharp and the booth background is slightly soft. No phone visible.`;
+The Technical Detail: The lighting is a realistic mix of the booth's warm yellow glow and the bright, cool-toned overhead exhibition hall LEDs. This creates authentic skin textures, minor imperfections, and a slight glint on the lanyard plastic. High-resolution 8k photorealistic style, 24mm wide-angle selfie lens distortion, and a shallow depth of field (bokeh) where the subjects are sharp and the booth background is slightly soft. No phone visible.
+
+[REINFORCEMENT - ORIGINAL PERSON PRESERVATION]:
+REMINDER: The input person's face and clothing must remain EXACTLY as shown - same expression level, same mouth state (open/closed), same facial features, same outfit. This is NON-NEGOTIABLE and takes absolute precedence over conference context.`;
 
   return prompt;
 }

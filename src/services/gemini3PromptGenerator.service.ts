@@ -38,13 +38,15 @@ export const BASE_JSON_TEMPLATE: PromptTemplate = {
     action: 'person taking a selfie with celebrity',
     original_person: {
       identity: 'the person from the input image',
-      pose: 'MANDATORY: Keep the EXACT same outfit, hairstyle, and facial expression as the original photo. DO NOT change the person\'s clothing style or appearance to match any scene or environment.',
-      visual_integrity: 'STRICTLY UNALTERED: Zero modifications to the person\'s physical appearance, clothing textures, or style. This person must look EXACTLY as they appear in the input image.',
+      pose: 'FREEZE FACIAL EXPRESSION: Lock the exact expression from reference. If mouth is closed, keep closed. If neutral, stay neutral. If smiling, match exact smile intensity. MANDATORY: Keep EXACT same outfit, hairstyle, and facial expression. DO NOT alter expression to match scene mood or celebrity personality.',
+      visual_integrity: 'ANATOMICAL LOCK: Preserve mouth position (open/closed), lip shape, teeth visibility, eye openness, eyebrow position, facial muscle tension exactly as shown. Clone every facial feature with photographic precision. STRICTLY UNALTERED: Zero modifications to physical appearance, clothing textures, expression level, or style.',
+      expression_priority: 'HIGHEST PRIORITY: User\'s facial expression takes absolute precedence over scene context. NEGATIVE CONSTRAINTS: DO NOT add smiles if neutral. DO NOT open mouth if closed. DO NOT show teeth if mouth closed. DO NOT modify facial muscle engagement or clothing style.',
     },
     celebrity: {
       name: '<CELEBRITY_NAME>',
       role_context: '<ICONIC_ROLE_OR_JOB>',
       position: 'standing naturally next to original person for a selfie',
+      physical_description: '<PHYSICAL_APPEARANCE_DETAILS>',
     },
     environment: {
       setting_name: '<ICONIC_SETTING>',
@@ -73,13 +75,15 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     action: 'selfie with arm extended holding camera at natural distance',
     original_person: {
       identity: 'the person from the input image',
-      pose: 'MANDATORY: Keep the EXACT same outfit, hairstyle, and facial expression as the original photo. DO NOT change the person\'s clothing style or appearance to match any scene or environment.',
-      visual_integrity: 'STRICTLY UNALTERED: Zero modifications to the person\'s physical appearance, clothing textures, or style. This person must look EXACTLY as they appear in the input image.',
+      pose: 'FREEZE FACIAL EXPRESSION: Lock the exact expression from reference. If mouth is closed, keep closed. If neutral, stay neutral. If smiling, match exact smile intensity. MANDATORY: Keep EXACT same outfit, hairstyle, and facial expression. DO NOT alter expression to match scene mood or celebrity personality.',
+      visual_integrity: 'ANATOMICAL LOCK: Preserve mouth position (open/closed), lip shape, teeth visibility, eye openness, eyebrow position, facial muscle tension exactly as shown. Clone every facial feature with photographic precision. STRICTLY UNALTERED: Zero modifications to physical appearance, clothing textures, expression level, or style.',
+      expression_priority: 'HIGHEST PRIORITY: User\'s facial expression takes absolute precedence over scene context. NEGATIVE CONSTRAINTS: DO NOT add smiles if neutral. DO NOT open mouth if closed. DO NOT show teeth if mouth closed. DO NOT modify facial muscle engagement or clothing style.',
     },
     celebrity: {
       name: '<CELEBRITY_NAME>',
       role_context: '<ICONIC_ROLE_OR_JOB>',
       position: 'leaning in close to the camera next to original person for an intimate selfie',
+      physical_description: '<PHYSICAL_APPEARANCE_DETAILS>',
     },
     environment: {
       setting_name: '<ICONIC_SETTING>',
@@ -117,10 +121,12 @@ ${result_description}
 
 Scene Setup:
 The photo shows ${original_person.identity} with ${celebrity.name} (${celebrity.role_context}). ${celebrity.position}.
+${celebrity.physical_description ? `\nCelebrity Appearance:\n${celebrity.physical_description}` : ''}
 
 CRITICAL - Original Person Preservation:
 ${original_person.pose}
 ${original_person.visual_integrity}
+${original_person.expression_priority ? `\n${original_person.expression_priority}` : ''}
 
 Environment:
 The setting is ${environment.setting_name}. ${environment.location_details}. The scene features ${environment.thematic_elements}.
@@ -244,6 +250,14 @@ export async function generateCelebrityPromptWithGemini3(
     // Build meta-prompt for Gemini 3
     const metaPrompt = `Adapt this prompt for: ${celebrityName}
 
+CRITICAL FACIAL PRESERVATION RULES (HIGHEST PRIORITY):
+When filling this template, ensure the original person's facial expression is preserved EXACTLY:
+- If their mouth is closed in the reference, the prompt must maintain closed mouth
+- If their expression is neutral, do NOT add smiles or positive emotions
+- Expression takes precedence over scene context (neutral face in happy scene = neutral face)
+- The person's appearance is a LOCKED CONSTANT, never modified for scene coherence
+- DO NOT suggest modifying their expression, smile, mouth state, or facial features
+
 IMPORTANT: The input may contain both a celebrity name AND context (e.g., "Taylor Swift at concert", "Elon Musk in SpaceX factory").
 Parse the input to identify:
 1. The celebrity's actual name (e.g., "Taylor Swift", "Elon Musk")
@@ -255,6 +269,17 @@ Fill in the placeholders in this JSON template:
 - Replace <ICONIC_SETTING> with the most appropriate setting based on the context OR their iconic environment if no context
 - Replace <SPECIFIC_ENVIRONMENT_DETAILS> with vivid, detailed description of that setting
 - Replace <KEY_PROPS_OR_BACKGROUND_FEATURES> with relevant props and features for that environment
+- Replace <PHYSICAL_APPEARANCE_DETAILS> with detailed physical description of the celebrity:
+  * Hair: color, length, style, distinctive features (e.g., "blonde hair with signature bangs", "short dark hair")
+  * Face: shape, distinctive features, typical expression (e.g., "fair complexion", "athletic facial structure")
+  * Build: height indicators, body type (e.g., "tall lean build", "athletic physique", "petite frame")
+  * Signature look: fashion style, typical outfit choices (e.g., "elegant feminine style with sophisticated dresses", "casual tech entrepreneur aesthetic")
+  * Distinguishing marks: notable accessories, signature items (e.g., "red lipstick", "signature tattoos")
+
+Physical Description Examples:
+- "Taylor Swift" → "blonde hair with signature bangs, fair complexion, red lipstick, elegant feminine style, typically wears sophisticated dresses or blazers"
+- "Elon Musk" → "short dark hair, clean-shaven or light stubble, tech entrepreneur aesthetic, casual t-shirts or business casual, tall lean build"
+- "Serena Williams" → "athletic build, powerful presence, natural curly hair often in braids, confident expression, typically wears athletic or elegant sporty attire"
 
 Examples:
 - Input: "Taylor Swift at concert" → Setting: concert stage with lights and audience

@@ -18,11 +18,13 @@ export interface PromptTemplate {
       identity: string;
       pose: string;
       visual_integrity: string;
+      expression_priority?: string;
     };
     celebrity: {
       name: string;
       role_context: string;
       position: string;
+      physical_description?: string;
     };
     environment: {
       setting_name: string;
