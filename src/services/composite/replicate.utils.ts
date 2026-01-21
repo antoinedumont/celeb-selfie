@@ -323,20 +323,21 @@ async function cancelPrediction(predictionId: string): Promise<void> {
  * Poll a prediction until it completes with proxy failover
  *
  * Fallback for when Prefer: wait times out.
- * Polls every 2 seconds for up to 120 seconds.
+ * Polls every 2 seconds for up to 180 seconds (3 minutes).
  * Uses timeout protection and proxy failover.
- * Emits progress warnings at 60s, 90s thresholds.
- * Auto-cancels predictions at 120s timeout.
+ * Emits progress warnings at 60s, 90s, 120s thresholds.
+ * Auto-cancels predictions at 180s timeout.
  */
 async function pollPrediction(
   predictionId: string,
   onProgress?: ProgressCallback
 ): Promise<ReplicatePrediction> {
-  const maxAttempts = 60; // 60 * 2s = 120s max (Nano Banana can take 75-90s)
+  const maxAttempts = 90; // 90 * 2s = 180s max (3 minutes - Nano Banana can take up to 160s under load)
   const startTime = Date.now();
   let attempts = 0;
   let hasWarned60s = false;
   let hasWarned90s = false;
+  let hasWarned120s = false;
 
   while (attempts < maxAttempts) {
     await delay(2000); // Wait 2 seconds between polls
@@ -351,12 +352,17 @@ async function pollPrediction(
     }
 
     if (elapsedSeconds >= 90 && !hasWarned90s) {
-      console.warn(`[Replicate] ⏳ Still processing... (${elapsedSeconds}s elapsed, up to 120s max)`);
+      console.warn(`[Replicate] ⏳ Still processing... (${elapsedSeconds}s elapsed, up to 180s max)`);
       hasWarned90s = true;
     }
 
+    if (elapsedSeconds >= 120 && !hasWarned120s) {
+      console.warn(`[Replicate] ⏳ Still processing... (${elapsedSeconds}s elapsed, patience appreciated)`);
+      hasWarned120s = true;
+    }
+
     // Check for timeout
-    if (elapsedSeconds >= 120) {
+    if (elapsedSeconds >= 180) {
       console.error(`[Replicate] ⏰ Timeout reached after ${elapsedSeconds}s, cancelling prediction...`);
       await cancelPrediction(predictionId);
       throw new Error('Generation took longer than expected and was cancelled. The AI service is experiencing delays. Please try again - it usually works on the second attempt!');
