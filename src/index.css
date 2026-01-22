@@ -965,11 +965,16 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Camera Video Dezoom */
-.camera-video-dezoom {
+/* Camera Video Dezoom - DEPRECATED (Issue #002)
+ * This class was removed because scale(0.88) combined with object-cover
+ * created excessive zoom instead of showing more of the frame.
+ * Solution: Use object-contain instead of object-cover to show full camera frame.
+ * Preserved for reference but no longer applied to video element.
+ */
+/* .camera-video-dezoom {
   transform: scale(0.88);
   transform-origin: center center;
-}
+} */
 
 /* Smooth Animations - Spring Physics */
 @keyframes spring-in {
@@ -1098,5 +1103,371 @@ body {
   .password-input {
     font-size: 1rem;
     padding: 16px 20px;
+  }
+}
+
+/* ============================================
+   SLEEK PROCESSING UI
+   Minimalist Progress Indicator
+   ============================================ */
+
+/* Processing Container - Full screen centered */
+.processing-container {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+/* Progress Ring Container */
+.progress-ring-container {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .progress-ring-container {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* SVG Progress Ring */
+.progress-ring {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 4;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: url(#progress-gradient);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Large Percentage Display */
+.progress-percentage {
+  position: absolute;
+  font-family: 'Outfit', -apple-system, sans-serif;
+  font-size: 72px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .progress-percentage {
+    font-size: 96px;
+  }
+}
+
+/* Status Text - Minimal */
+.status-text-minimal {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Time Remaining */
+.time-remaining {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+/* Breathing Animation for Ring */
+.progress-ring-container::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 78, 123, 0.15) 0%, transparent 70%);
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Reduced motion - disable breathing */
+@media (prefers-reduced-motion: reduce) {
+  .progress-ring-container::before {
+    animation: none;
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  .progress-ring-fill {
+    transition: none;
+  }
+}
+
+/* ============================================
+   MODE TOGGLE - Apple Style Segmented Control
+   ============================================ */
+
+.mode-toggle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.mode-toggle {
+  display: flex;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mode-toggle-option {
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.mode-toggle-option:hover:not(.active):not(:disabled) {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.mode-toggle-option.active {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.mode-toggle-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Mode description text */
+.mode-description {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+/* Go1 Mode indicator badge */
+.mode-badge-go1 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Freestyle Mode indicator badge */
+.mode-badge-freestyle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #f79533 0%, #ef4e7b 100%);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Reduced motion for mode toggle */
+@media (prefers-reduced-motion: reduce) {
+  .mode-toggle-option {
+    transition: none;
+  }
+}
+
+/* ============================================
+   INLINE VOICE BUTTON - Compact Style
+   ============================================ */
+
+.voice-btn-inline {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Smaller version inside input */
+.voice-btn-inline-sm {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-btn-inline-sm:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.voice-btn-inline-sm:active {
+  transform: scale(0.95);
+}
+
+.voice-btn-inline-sm.listening {
+  background: #000;
+  color: #fff;
+  animation: pulse-inline 1.5s ease-in-out infinite;
+}
+
+.voice-btn-inline-sm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.voice-btn-inline:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.voice-btn-inline:active {
+  transform: scale(0.95);
+}
+
+.voice-btn-inline.listening {
+  background: #000;
+  color: #fff;
+  animation: pulse-inline 1.5s ease-in-out infinite;
+}
+
+.voice-btn-inline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-inline {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
+  }
+}
+
+/* ============================================
+   DISCREET MODE TOGGLE - Minimal Text Style
+   ============================================ */
+
+.mode-toggle-discreet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.mode-option-discreet {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0;
+}
+
+.mode-option-discreet:hover:not(:disabled):not(.active) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mode-option-discreet.active {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+.mode-option-discreet:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.mode-separator {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+/* Reduced motion for inline voice button */
+@media (prefers-reduced-motion: reduce) {
+  .voice-btn-inline.listening {
+    animation: none;
+  }
+
+  .voice-btn-inline,
+  .mode-option-discreet {
+    transition: none;
   }
 }

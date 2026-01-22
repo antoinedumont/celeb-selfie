@@ -7,9 +7,9 @@ import { CelebrityResult } from './components/CelebrityResult';
 import { AdminGallery } from './components/admin/AdminGallery';
 import { Onboarding } from './components/Onboarding';
 import { PasswordProtection } from './components/PasswordProtection';
-import { compositeWithNanoBanana, type CompositeResult } from './services/composite';
+import { compositeWithGoogleDirect, type CompositeResult } from './services/composite';
 import { buildFreestyleSelfiePrompt } from './services/composite/promptBuilder';
-import type { AppStep, CapturedPhoto, AppError, GalleryMetadata } from './types';
+import type { AppStep, CapturedPhoto, AppError, GalleryMetadata, CelebrityGenerationMode } from './types';
 import { savePhoto } from './services/galleryStorage.service';
 import { isPasswordRequired, getAuthSession, clearAuthSession } from './utils/auth.utils';
 
@@ -35,6 +35,18 @@ function App() {
   const [celebrityProgress, setCelebrityProgress] = useState(0);
   const [generatedPrompt, setGeneratedPrompt] = useState<string>('');
   const [generatedJsonTemplate, setGeneratedJsonTemplate] = useState<any>(null);
+
+  // Generation mode state (freestyle or go1)
+  const [generationMode, setGenerationMode] = useState<CelebrityGenerationMode>(() => {
+    const saved = localStorage.getItem('celeb-selfie-generation-mode');
+    return (saved === 'go1' || saved === 'freestyle') ? saved : 'freestyle';
+  });
+
+  // Persist generation mode to localStorage
+  useEffect(() => {
+    localStorage.setItem('celeb-selfie-generation-mode', generationMode);
+    console.log('[App] Generation mode changed:', generationMode);
+  }, [generationMode]);
 
   // Keyboard shortcuts (Ctrl+Shift+G for admin, Ctrl+Shift+L for logout)
   useEffect(() => {
@@ -81,32 +93,35 @@ function App() {
     setCelebrityProgress(0);
     setError(null);
 
-    console.log('[App] Starting Nano Banana Pro composition (freestyle mode)...');
+    console.log(`[App] Starting Nano Banana Pro composition (${generationMode} mode)...`);
 
     try {
-      // Always use freestyle mode
+      // Generate prompt based on mode
       setIsGeneratingPrompt(true);
-      console.log('[App] Generating AI prompt with Gemini...');
+      console.log(`[App] Generating ${generationMode.toUpperCase()} prompt...`);
 
       const promptResult = await buildFreestyleSelfiePrompt(customCelebrityInput);
       const displayPrompt = promptResult.naturalLanguage;
       const jsonTemplate = promptResult.jsonTemplate;
 
-      console.log('[App] Freestyle prompt source:', promptResult.source);
+      console.log('[App] Prompt source:', promptResult.source);
       console.log('[App] JSON Template:', jsonTemplate);
 
       setIsGeneratingPrompt(false);
       setGeneratedPrompt(displayPrompt);
       setGeneratedJsonTemplate(jsonTemplate);
 
-      const result = await compositeWithNanoBanana(
+      // Use Google Direct API (Nano Banana Pro)
+      console.log(`[App] Using Google Direct API with ${generationMode} mode`);
+
+      const result = await compositeWithGoogleDirect(
         userPhoto.dataUrl,
-        '', // No celebrity image URL needed for freestyle
+        '', // No celebrity image URL needed
         customCelebrityInput,
         (progress) => setCelebrityProgress(progress),
         {
           useTextPromptMode: true,
-          generationMode: 'freestyle'
+          generationMode: generationMode,
         },
         undefined
       );
@@ -118,7 +133,7 @@ function App() {
       if (result.success && result.imageUrl && userPhoto) {
         const metadata: GalleryMetadata = {
           celebrityName: customCelebrityInput,
-          generationMode: 'freestyle',
+          generationMode: generationMode,
           promptText: displayPrompt,
           userPhotoUrl: userPhoto.dataUrl,
         };
@@ -213,25 +228,17 @@ function App() {
 
         {/* Desktop centered container */}
         <div className="w-full max-w-full sm:max-w-[540px] lg:max-w-[680px] flex flex-col">
-          {/* Header - Minimalist Apple Style (Hidden on camera step) */}
-          {step !== 'camera' && (
+          {/* Header - Minimalist Apple Style (Hidden on camera and processing steps) */}
+          {step !== 'camera' && step !== 'processing' && (
             <header className="apple-glass-strong sticky top-0 z-40 backdrop-blur-xl">
               <div className="px-4 sm:px-6 py-5">
-                <div className="flex items-center justify-center relative">
+                <div className="flex items-center justify-center">
                   {/* Logo - Centered & Minimal */}
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">✨</div>
                     <h1 className="text-xl sm:text-2xl text-apple font-inter font-bold">
                       Celeb Selfie
                     </h1>
-                  </div>
-
-                  {/* Status Badge - Minimal dot indicator */}
-                  <div className="absolute right-0 hud-apple text-xs">
-                    {step === 'select' && 'Select'}
-                    {step === 'processing' && 'Creating'}
-                    {step === 'result' && 'Done'}
-                    {step === 'error' && 'Error'}
                   </div>
                 </div>
               </div>
@@ -252,8 +259,10 @@ function App() {
                   onSubmit={handleCustomCelebritySubmit}
                   disabled={isLoading}
                   isLoading={isLoading}
+                  generationMode={generationMode}
+                  onModeChange={setGenerationMode}
                 />
-                <div className="text-center mt-8">
+                <div className="text-center mt-12">
                   <button
                     onClick={handleReset}
                     className="btn-secondary"
@@ -269,7 +278,6 @@ function App() {
               <ProcessingIndicator
                 progress={celebrityProgress}
                 celebrityName={celebrityName}
-                promptText={generatedPrompt}
                 isGeneratingPrompt={isGeneratingPrompt}
               />
             )}
@@ -311,14 +319,16 @@ function App() {
             )}
           </main>
 
-          {/* Footer */}
-          <footer className="border-t border-white/10 py-3">
-            <div className="px-4 text-center">
-              <p className="text-xs text-white/30">
-                Powered by AI
-              </p>
-            </div>
-          </footer>
+          {/* Footer - Hidden during processing */}
+          {step !== 'processing' && (
+            <footer className="border-t border-white/10 py-3">
+              <div className="px-4 text-center">
+                <p className="text-xs text-white/30">
+                  Powered by AI
+                </p>
+              </div>
+            </footer>
+          )}
         </div>
       </div>
     </ErrorBoundary>
