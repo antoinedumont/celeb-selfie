@@ -72,8 +72,8 @@ export const BASE_JSON_TEMPLATE: PromptTemplate = {
 export const POV_SELFIE_TEMPLATE: PromptTemplate = {
   task: 'edit_image',
   scene_description: {
-    camera_perspective: 'front-facing_camera_selfie_POV',
-    action: 'selfie with arm extended holding camera at natural distance',
+    camera_perspective: 'close-up_selfie_POV',
+    action: 'close-up selfie with natural arm-length framing',
     original_person: {
       identity: 'the person from the input image',
       pose: 'FREEZE FACIAL EXPRESSION: Lock the exact expression from reference. If mouth is closed, keep closed. If neutral, stay neutral. If smiling, match exact smile intensity. MANDATORY: Keep EXACT same outfit, hairstyle, and facial expression. DO NOT alter expression to match scene mood or celebrity personality.',
@@ -83,7 +83,7 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     celebrity: {
       name: '<CELEBRITY_NAME>',
       role_context: '<ICONIC_ROLE_OR_JOB>',
-      position: 'leaning in close to the camera next to original person for an intimate selfie',
+      position: 'leaning in close next to original person for an intimate selfie',
       physical_description: '<PHYSICAL_APPEARANCE_DETAILS>',
     },
     environment: {
@@ -91,20 +91,19 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
       location_details: '<SPECIFIC_ENVIRONMENT_DETAILS>',
       thematic_elements: '<KEY_PROPS_OR_BACKGROUND_FEATURES>',
     },
-    lens_effect: 'Wide-angle lens distortion typical of smartphone front cameras, creating slight fisheye effect where faces appear slightly larger in the center. CRITICAL: This photo is captured BY a smartphone camera, not OF a smartphone camera.',
-    composition: 'Faces dominate the frame entirely, showing only head and shoulders in tight framing. Both people\'s faces take up most of the image space.',
-    phone_visibility: 'CRITICAL: The mobile phone/camera device must NEVER be visible in the frame. The photo is taken from the phone\'s perspective, but the phone itself is completely out of frame. This is a photo taken FROM the phone, not a photo OF someone holding a phone.',
-    framing_rules: 'Natural arm\'s-length handheld shot captured from front-facing camera perspective. The phone is held by the photographer but remains entirely outside the visible frame. The framing is a natural arm\'s-length handheld shot; the mobile phone itself is never visible.',
+    lens_effect: 'Wide-angle 24mm lens distortion creating slight fisheye effect where faces appear slightly larger in the center.',
+    composition: 'Faces dominate the frame entirely, showing only head and shoulders in tight close-up framing. Both people\'s faces take up most of the image space.',
+    framing_rules: 'Natural arm\'s-length framing. Intimate close-up composition typical of authentic selfies.',
     height_proportions: 'Preserve realistic height differences between original person and celebrity based on their actual heights. Taller person naturally appears with head higher in frame, shorter person with head lower. DO NOT artificially equalize heights.',
   },
   visual_style: {
     realism: 'photorealistic',
-    lighting: 'natural to the specific environment with slight front-facing camera flash effect',
+    lighting: 'natural to the specific environment with slight flash effect',
     shadows: 'physically accurate and consistent',
     depth_and_scale: 'realistic proportions for all subjects and the background, with slight wide-angle perspective distortion',
   },
   result_description:
-    "A seamless, photorealistic POV selfie taken with a front-facing smartphone camera. The original person and the celebrity are standing together in natural selfie framing, with both faces clearly visible and comfortably composed in the frame. The background is the celebrity's iconic professional environment, but slightly blurred due to the selfie focus. CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything. This is NOT a photo taken by a third person - it is a POV selfie with the camera held at arm's length. The mobile phone itself is never visible - this is a photo taken FROM the phone, not a photo OF someone holding a phone.",
+    "A seamless, photorealistic close-up selfie. The original person and the celebrity are standing together in natural selfie framing, with both faces clearly visible and dominating the frame. The background is the celebrity's iconic professional environment, slightly blurred (bokeh). CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything.",
 };
 
 /**
@@ -135,7 +134,6 @@ Environment:
 The setting is ${environment.setting_name}. ${environment.location_details}. The scene features ${environment.thematic_elements}.
 ${scene_description.lens_effect ? `\nLens Effect:\n${scene_description.lens_effect}` : ''}
 ${scene_description.composition ? `\nComposition:\n${scene_description.composition}` : ''}
-${scene_description.phone_visibility ? `\nPhone Visibility:\n${scene_description.phone_visibility}` : ''}
 ${scene_description.framing_rules ? `\nFraming Rules:\n${scene_description.framing_rules}` : ''}
 
 Visual Style:
@@ -282,32 +280,32 @@ Fill in the placeholders in this JSON template:
 - Replace <SPECIFIC_ENVIRONMENT_DETAILS> with vivid, detailed description of that setting
 - Replace <KEY_PROPS_OR_BACKGROUND_FEATURES> with relevant props and features for that environment
 - Replace <PHYSICAL_APPEARANCE_DETAILS> with detailed physical description of the celebrity:
-  * Height & Build: CRITICAL - Include specific height category with build type:
-    - Very tall (6'3"+/190cm+): "very tall build, towering presence, notably taller than most people"
-    - Tall (5'11"-6'2"/180-189cm): "tall athletic build, stands above average height"
-    - Average (5'7"-5'10"/170-179cm): "average height build, medium stature"
-    - Shorter (5'3"-5'6"/160-169cm): "petite build, shorter than average stature"
-    - Very short (<5'3"/<160cm): "very petite build, notably shorter than most people"
+  * Height & Build: CRITICAL - RESEARCH AND INCLUDE THE CELEBRITY'S ACTUAL HEIGHT:
+    - Use your knowledge of the celebrity's real-world height
+    - Include BOTH metric (cm) and imperial (feet/inches) measurements
+    - Describe how this affects their presence relative to average person (170cm/5'7"):
+      - Very tall (190cm+/6'3"+): "very tall imposing presence (HEIGHT), towers over most people"
+      - Tall (180-189cm/5'11"-6'2"): "tall build (HEIGHT), stands notably above average"
+      - Average (170-179cm/5'7"-5'10"): "average height (HEIGHT), similar height to most people"
+      - Shorter (160-169cm/5'3"-5'6"): "shorter stature (HEIGHT), below average height"
+      - Very short (<160cm/<5'3"): "petite build (HEIGHT), notably shorter than most"
+    - THIS HEIGHT WILL AFFECT HOW THE SELFIE IS COMPOSED - taller celebrities appear with head higher in frame
   * Hair: color, length, style, distinctive features (e.g., "blonde hair with signature bangs", "short dark hair")
   * Face: shape, distinctive features, typical expression (e.g., "fair complexion", "athletic facial structure")
   * Signature look: fashion style, typical outfit choices (e.g., "elegant feminine style with sophisticated dresses", "casual tech entrepreneur aesthetic")
   * Distinguishing marks: notable accessories, signature items (e.g., "red lipstick", "signature tattoos")
 
-Physical Description Examples:
-- "Taylor Swift" → "tall slender build (5'11"/180cm), blonde hair with signature bangs, fair complexion, red lipstick, elegant feminine style, typically wears sophisticated dresses or blazers"
-- "Elon Musk" → "tall lean build (6'2"/188cm), short dark hair, clean-shaven or light stubble, tech entrepreneur aesthetic, casual t-shirts or business casual"
-- "Serena Williams" → "tall athletic build (5'9"/175cm), powerful presence, natural curly hair often in braids, confident expression, typically wears athletic or elegant sporty attire"
+Physical Description Examples (WITH ACTUAL RESEARCHED HEIGHTS):
+- "Taylor Swift" → "tall slender build (180cm/5'11"), stands above average height, blonde hair with signature bangs, fair complexion, red lipstick, elegant feminine style"
+- "Elon Musk" → "tall lean build (188cm/6'2"), notably taller than average, short dark hair, clean-shaven or light stubble, tech entrepreneur aesthetic"
+- "Serena Williams" → "tall athletic build (175cm/5'9"), powerful presence, natural curly hair often in braids, confident expression"
+- "Danny DeVito" → "very short stature (147cm/4'10"), compact build, notably shorter than most people, bald, expressive face"
+- "LeBron James" → "very tall imposing presence (206cm/6'9"), towers over most people, muscular athletic build, short hair"
 
 Examples:
 - Input: "Taylor Swift at concert" → Setting: concert stage with lights and audience
 - Input: "Elon Musk in SpaceX factory" → Setting: SpaceX manufacturing facility with rockets
 - Input: "Serena Williams" → Setting: professional tennis court (use default iconic setting)
-
-CRITICAL CONSTRAINT - Phone Visibility:
-The mobile phone/camera device must NEVER appear in the generated image.
-This is a photo taken FROM a front-facing smartphone camera perspective, not a photo OF someone holding a phone.
-The phone is held at arm's length by the photographer but remains completely outside the visible frame.
-The framing is a natural arm's-length handheld shot; the mobile phone itself is never visible.
 
 Return ONLY the completed JSON object with all placeholders filled. Do not include any explanation or additional text.
 
@@ -365,6 +363,7 @@ ${JSON.stringify(templateCopy, null, 2)}`;
     console.log('[Gemini3] ✅ Template validated successfully');
     console.log(`[Gemini3] ✅ Celebrity: ${filledTemplate.scene_description.celebrity.name}`);
     console.log(`[Gemini3] ✅ Role: ${filledTemplate.scene_description.celebrity.role_context}`);
+    console.log(`[Gemini3] ✅ Physical: ${filledTemplate.scene_description.celebrity.physical_description}`);
     console.log(`[Gemini3] ✅ Setting: ${filledTemplate.scene_description.environment.setting_name}`);
     console.log(`[Gemini3] ✅ Props: ${filledTemplate.scene_description.environment.thematic_elements}`);
 
