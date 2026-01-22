@@ -50,13 +50,13 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
               </div>
             </div>
 
-            {/* Video Feed with Dezoom */}
+            {/* Video Feed - Middle Shot Framing */}
             <video
               ref={videoRef}
               autoPlay
               playsInline
               muted
-              className={`camera-video-dezoom selfie-mirror absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${!isReady ? 'opacity-30' : ''}`}
+              className={`selfie-mirror absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${!isReady ? 'opacity-30' : ''}`}
               aria-label="Live camera feed"
             />
 
