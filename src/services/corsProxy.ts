@@ -1,9 +1,8 @@
 /**
  * CORS Proxy Utility
  *
- * Handles CORS proxy configuration for browser-based Replicate API calls.
- * Replicate API doesn't support CORS, so we need to proxy requests through
- * a CORS proxy service when running in the browser.
+ * Handles CORS proxy configuration for browser-based Google API calls.
+ * Google AI API may require proxy for geo-blocked regions.
  *
  * Features:
  * - Multi-proxy failover for high availability
@@ -13,8 +12,8 @@
  *
  * Usage:
  * - Set VITE_USE_CORS_PROXY=true in .env to enable proxy
- * - Optionally set VITE_CORS_PROXY_URL to override default proxies
- * - Use getCorsProxyUrl() to wrap Replicate API URLs
+ * - Set VITE_US_CORS_PROXY_URL for Google API proxy
+ * - Use getCorsProxyUrl() to wrap API URLs
  */
 
 /**
@@ -60,20 +59,23 @@ export function getProxyBaseUrl(): string {
 /**
  * Get array of proxy URLs to try (in priority order)
  *
- * @returns Array of proxy URLs (only custom proxy, no fallbacks)
- * @throws Error if no custom proxy is configured
+ * @returns Array of proxy URLs (US primary, France fallback)
+ * @throws Error if no proxy is configured
  */
 export function getProxyUrls(): string[] {
-  // We only use our custom VPS proxy - no fallback proxies
-  const customProxy = getProxyBaseUrl();
+  // Multi-proxy setup: US (primary) + France (fallback)
+  const usProxy = import.meta.env.VITE_US_CORS_PROXY_URL;
+  const franceProxy = import.meta.env.VITE_CORS_PROXY_URL;
 
-  if (!customProxy) {
+  const proxies = [usProxy, franceProxy].filter(Boolean);
+
+  if (proxies.length === 0) {
     throw new Error(
-      'No CORS proxy configured. Please set VITE_CORS_PROXY_URL in .env to https://api.tmtprod.com/replicate/'
+      'No CORS proxy configured. Please set VITE_US_CORS_PROXY_URL and/or VITE_CORS_PROXY_URL in .env'
     );
   }
 
-  return [customProxy];
+  return proxies;
 }
 
 /**
@@ -176,9 +178,9 @@ export function selectBestProxy(): string {
  * For failover support, use getCorsProxyUrlWithProxy() to specify a proxy.
  *
  * Example:
- * - Input: https://api.replicate.com/v1/predictions
- * - Output (with proxy): https://corsproxy.io/?https%3A%2F%2Fapi.replicate.com%2Fv1%2Fpredictions
- * - Output (without proxy): https://api.replicate.com/v1/predictions
+ * - Input: https://generativelanguage.googleapis.com/v1beta/models/...
+ * - Output (with proxy): https://us.api.tmtprod.com/google/v1beta/models/...
+ * - Output (without proxy): https://generativelanguage.googleapis.com/v1beta/models/...
  *
  * @param targetUrl - The URL to wrap with proxy
  * @returns Proxied URL if enabled, original URL otherwise
@@ -202,14 +204,14 @@ export function getCorsProxyUrl(targetUrl: string): string {
 export function getCorsProxyUrlWithProxy(targetUrl: string, proxyBaseUrl: string): string {
   // Detect if this is a path-based proxy (nginx) or query-based proxy (public CORS proxies)
   // Path-based proxies end with "/" without query parameter
-  // Our VPS nginx proxy uses /replicate/ path prefix
-  const isPathBasedProxy = proxyBaseUrl.includes('/replicate/') ||
+  // Our VPS nginx proxy uses /google/ path prefix for Google AI API
+  const isPathBasedProxy = proxyBaseUrl.includes('/google/') ||
                            (proxyBaseUrl.endsWith('/') && !proxyBaseUrl.includes('?'));
 
-  if (isPathBasedProxy && targetUrl.startsWith('https://api.replicate.com/')) {
+  if (isPathBasedProxy && targetUrl.startsWith('https://generativelanguage.googleapis.com/')) {
     // For path-based proxies, replace the API domain with the proxy base
-    // Example: https://api.replicate.com/v1/predictions -> https://api.tmtprod.com/replicate/v1/predictions
-    const apiPath = targetUrl.replace('https://api.replicate.com/', '');
+    // Example: https://generativelanguage.googleapis.com/v1beta/... -> https://us.api.tmtprod.com/google/v1beta/...
+    const apiPath = targetUrl.replace('https://generativelanguage.googleapis.com/', '');
     return `${proxyBaseUrl}${apiPath}`;
   }
 

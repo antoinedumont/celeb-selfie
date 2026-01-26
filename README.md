@@ -2,7 +2,7 @@
 
 Create stunning, photorealistic selfies with your favorite celebrities using the power of artificial intelligence!
 
-Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Google Gemini (Nano Banana Pro)** via **Replicate API**.
+Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Google Gemini**.
 
 ## 🎨 Features
 
@@ -37,8 +37,8 @@ Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Goog
 
 3. **AI Magic** ✨
    - Gemini 2.5 Flash generates a contextual prompt
-   - Nano Banana Pro creates photorealistic composition
-   - 60-90 seconds processing time
+   - Google Gemini creates photorealistic composition
+   - 20-40 seconds processing time
 
 4. **Download & Share** 🎉
    - View your AI-generated selfie
@@ -50,7 +50,6 @@ Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Goog
 ### Prerequisites
 
 - **Node.js 18+**
-- **Replicate API Account** ([Get API key](https://replicate.com/account/api-tokens))
 - **Google AI Studio API Key** ([Get API key](https://aistudio.google.com/app/apikey))
 - Modern browser with webcam support
 
@@ -68,9 +67,8 @@ Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Goog
 
 3. **Environment is already configured**
    The `.env` file is already set up with:
-   - Replicate API token
    - Google AI Studio API key
-   - CORS proxy configuration
+   - CORS proxy configuration (for geo-blocked regions)
 
 4. **Start development server**
    ```bash
@@ -86,8 +84,8 @@ Built with **React 19**, **TypeScript**, **Tailwind CSS**, and powered by **Goog
 - **Styling**: Tailwind CSS 4, Custom CSS animations
 - **AI Models**:
   - Google Gemini 2.5 Flash (prompt generation)
-  - Nano Banana Pro (image generation)
-- **API**: Replicate unified API
+  - Google Gemini (image generation)
+- **API**: Google AI Studio (direct access or via proxy for geo-blocked regions)
 - **Build Tool**: Vite 7
 - **Fonts**: Outfit (display), DM Sans (body)
 
@@ -129,8 +127,7 @@ celeb-selfie/
 │   │   └── admin/
 │   │       └── AdminGallery.tsx        # View all generated photos
 │   ├── services/
-│   │   ├── composite/                  # Nano Banana Pro integration
-│   │   ├── replicate/                  # Replicate API client
+│   │   ├── composite/                  # Google Gemini integration
 │   │   └── galleryStorage.service.ts   # Local gallery storage
 │   ├── utils/
 │   │   ├── image.utils.ts              # Image processing
@@ -205,16 +202,16 @@ The `dist/` folder will contain the production-ready build.
 ### Environment Variables
 
 Make sure to set these in your deployment platform:
-- `VITE_REPLICATE_API_TOKEN`
-- `VITE_GOOGLE_AI_STUDIO_API_KEY`
-- `VITE_USE_CORS_PROXY=true`
-- `VITE_CORS_PROXY_URL`
+- `VITE_GOOGLE_AI_STUDIO_API_KEY` (required)
+- `VITE_USE_CORS_PROXY=true` (for geo-blocked regions)
+- `VITE_US_CORS_PROXY_URL` (for geo-blocked regions)
 
 ## 💰 Cost Estimation
 
 - **Prompt Generation**: ~$0.001-0.005 per celebrity (7-day cache)
-- **Image Generation**: ~$0.15 per image (Nano Banana Pro)
-- **Average Cost**: ~$0.15 per selfie (prompts cached)
+- **Image Generation**: $0.13-0.24 per image (depending on resolution)
+- **Average Cost**: ~$0.13-0.24 per selfie (prompts cached)
+- Processing time: 20-40 seconds
 
 ## 🛡️ Privacy & Security
 
@@ -243,7 +240,7 @@ Private project - All rights reserved
 
 ## 🙏 Credits
 
-- **AI Models**: Google Gemini, Nano Banana Pro (Replicate)
+- **AI Models**: Google Gemini
 - **Design Inspiration**: PhotoAI.com
 - **Fonts**: Google Fonts (Outfit, DM Sans)
 - **Icons**: Heroicons (via inline SVG)

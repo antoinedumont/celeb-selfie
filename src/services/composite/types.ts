@@ -9,12 +9,10 @@ import type { CelebrityGenerationMode } from '../../types';
 
 /**
  * Supported AI models for photo compositing
- * Both models now accessed via Replicate API for unified authentication
+ * Uses Google AI Studio API directly via US proxy
  */
 export enum CompositeModel {
-  NANO_BANANA_PRO = 'nano-banana-pro',
-  PHOTOMAKER = 'photomaker',
-  GPT_IMAGE = 'gpt-image-1.5',
+  GOOGLE_DIRECT = 'google-direct',
 }
 
 /**
@@ -120,7 +118,8 @@ export interface CompositeService {
 export interface GeminiGenerationConfig {
   responseModalities: string[];
   imageConfig: {
-    resolution: string;
+    imageSize: string;
+    aspectRatio?: string;
   };
   thinkingConfig?: {
     thinkingBudget: number;

@@ -21,27 +21,29 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="fixed inset-0 w-full flex justify-center bg-black" style={{ height: '100dvh' }}>
       {error ? (
         // Error State - Mobile optimized
-        <div className="card w-full max-w-md mx-auto p-8 text-center fade-in">
-          <div className="text-6xl mb-4">📷</div>
-          <h3 className="text-2xl font-bold mb-3">Camera Access Required</h3>
-          <p className="text-white/60 mb-6 text-sm">{error.message}</p>
-          {error.retryable && (
-            <button
-              onClick={retryCamera}
-              className="btn-primary w-full sm:w-auto"
-              aria-label="Allow camera access to take selfie"
-            >
-              Allow Camera Access
-            </button>
-          )}
+        <div className="flex items-center justify-center h-full p-4">
+          <div className="card w-full max-w-md mx-auto p-8 text-center fade-in">
+            <div className="text-6xl mb-4">📷</div>
+            <h3 className="text-2xl font-bold mb-3">Camera Access Required</h3>
+            <p className="text-white/60 mb-6 text-sm">{error.message}</p>
+            {error.retryable && (
+              <button
+                onClick={retryCamera}
+                className="btn-primary w-full sm:w-auto"
+                aria-label="Allow camera access to take selfie"
+              >
+                Allow Camera Access
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <>
-          {/* Video Preview Container - Full Screen iOS Camera Style */}
-          <div className="relative w-full h-screen max-h-screen overflow-hidden" role="region" aria-label="Camera preview">
+          {/* Video Preview Container - 2:3 Portrait Format (width:height) */}
+          <div className="relative h-full overflow-hidden w-full max-w-[66.67vh]" role="region" aria-label="Camera preview">
             {/* Title Overlay - Top */}
             <div className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-safe-top" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))' }}>
               <div className="camera-title-overlay">
@@ -50,13 +52,13 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
               </div>
             </div>
 
-            {/* Video Feed - Middle Shot Framing */}
+            {/* Video Feed - 2:3 Portrait Format */}
             <video
               ref={videoRef}
               autoPlay
               playsInline
               muted
-              className={`selfie-mirror absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${!isReady ? 'opacity-30' : ''}`}
+              className={`selfie-mirror absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ${!isReady ? 'opacity-30' : ''}`}
               aria-label="Live camera feed"
             />
 
@@ -114,7 +116,6 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
               </button>
             </div>
           </div>
-
           <canvas ref={canvasRef} className="hidden" />
         </>
       )}

@@ -93,15 +93,13 @@ export const CelebrityResult = ({
     <div className="w-full py-8 fade-in" role="region" aria-label="Celebrity selfie result">
       {result.success && result.imageUrl ? (
         <>
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="text-6xl mb-4 animate-bounce" aria-hidden="true">🎉</div>
-            <h1 className="text-4xl sm:text-5xl font-black text-gradient mb-3" role="status">
-              Your Celeb Selfie{hasMultipleImages ? 's' : ''}!
+          {/* Success Header - Minimal */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2" role="status">
+              Your Selfie
             </h1>
-            <p className="text-lg text-white/70">
-              Created with <span className="font-bold text-gradient">{celebrityName}</span>
-              {hasMultipleImages && ' (2 variations)'}
+            <p className="text-sm text-white/50">
+              with {celebrityName}
             </p>
           </div>
 
@@ -186,10 +184,6 @@ export const CelebrityResult = ({
                 ))}
               </div>
 
-              {/* Selection hint */}
-              <p className="text-center text-white/60 text-sm mt-4">
-                Pick your favorite - download or share the one you like best!
-              </p>
             </div>
           ) : (
             /* Single image display (backward compatible) */
@@ -206,176 +200,143 @@ export const CelebrityResult = ({
             </div>
           )}
 
-          {/* Cloudinary Share Link */}
-          {cloudinaryUrl ? (
-            <div className="card p-4 mb-8 fade-in">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                  <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                  </svg>
-                  Cloud Storage ☁️
-                </div>
-              </div>
-              <p className="text-xs text-white/50 mb-3">
-                Your photo has been saved to the cloud and can be shared
-              </p>
+          {/* Share Link - Minimal */}
+          {cloudinaryUrl && (
+            <div className="mb-6">
               <button
                 onClick={handleCopyLink}
                 className="btn-secondary w-full flex items-center justify-center gap-2"
-                aria-label={copiedLink ? "Link copied to clipboard" : "Copy shareable link to clipboard"}
+                aria-label={copiedLink ? "Link copied" : "Copy link"}
               >
                 {copiedLink ? (
                   <>
-                    <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Link Copied!
+                    Copied
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
-                    Copy Shareable Link
+                    Share
                   </>
                 )}
               </button>
             </div>
-          ) : (
-            <div className="card p-4 mb-8 fade-in">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <p className="text-sm text-white/60">
-                  Uploading to cloud storage... 💾
-                </p>
-              </div>
-            </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          {/* Action Buttons - Minimal */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <button
               onClick={handleDownload}
               disabled={isDownloading}
               className="btn-primary flex-1 flex items-center justify-center gap-2"
-              aria-label={isDownloading ? "Downloading image" : "Download image to device"}
+              aria-label={isDownloading ? "Downloading" : "Download"}
               aria-busy={isDownloading}
             >
               {isDownloading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Downloading...
-                </>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download Image
-                </>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
               )}
+              {isDownloading ? 'Saving...' : 'Download'}
             </button>
 
             <button
               onClick={onRetry}
               className="btn-secondary flex-1 flex items-center justify-center gap-2"
-              aria-label="Try generating with another celebrity"
+              aria-label="Try again"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Try Another Celebrity
+              Retry
             </button>
 
             <button
               onClick={onReset}
               className="btn-ghost flex items-center justify-center gap-2"
-              aria-label="Take a new selfie photo"
+              aria-label="New photo"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               </svg>
+              New
+            </button>
+          </div>
+
+          {/* AI Prompt - Collapsible, Minimal */}
+          {promptText && (
+            <button
+              onClick={() => setShowPrompt(!showPrompt)}
+              className="w-full text-left text-xs text-white/30 hover:text-white/50 transition-colors"
+              aria-expanded={showPrompt}
+            >
+              {showPrompt ? 'Hide prompt ↑' : 'View prompt ↓'}
+            </button>
+          )}
+          {showPrompt && promptText && (
+            <div className="mt-2 p-4 rounded-xl bg-white/5 text-xs text-white/40 leading-relaxed">
+              {promptText}
+            </div>
+          )}
+        </>
+      ) : (
+        /* Error State - With Debug Prompt */
+        <div className="text-center py-8 px-4" role="alert" aria-live="assertive">
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Generation failed
+          </h2>
+          <p className="text-sm text-white/50 mb-6">
+            {result.error || 'Please try again'}
+          </p>
+          <div className="flex gap-3 justify-center mb-6">
+            <button onClick={onRetry} className="btn-primary">
+              Retry
+            </button>
+            <button onClick={onReset} className="btn-secondary">
               New Photo
             </button>
           </div>
 
-          {/* AI Prompt Section */}
-          {promptText && (
-            <div className="card p-6">
+          {/* Debug: Show failed prompt */}
+          {(result.metadata?.promptUsed || promptText) && (
+            <div className="mt-6 text-left">
               <button
                 onClick={() => setShowPrompt(!showPrompt)}
-                className="w-full flex items-center justify-between group"
+                className="w-full text-left text-xs text-white/40 hover:text-white/60 transition-colors mb-2"
                 aria-expanded={showPrompt}
-                aria-label={showPrompt ? "Hide AI prompt" : "View AI prompt used for generation"}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-orange to-brand-pink flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-white">View AI Prompt</h3>
-                </div>
-                <svg
-                  className={`w-5 h-5 text-white/60 transition-transform duration-300 ${showPrompt ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {showPrompt ? '▼ Hide failed prompt (debug)' : '▶ Show failed prompt (debug)'}
               </button>
-
               {showPrompt && (
-                <div className="mt-4 pt-4 border-t border-white/10 slide-up">
-                  <p className="text-sm text-white/60 leading-relaxed mb-4">
-                    {promptText}
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                  <p className="text-xs text-red-400 mb-2 font-medium">
+                    Mode: {result.metadata?.mode || 'unknown'} | Resolution: {result.metadata?.resolution || 'unknown'}
                   </p>
+                  <pre className="text-xs text-white/60 leading-relaxed whitespace-pre-wrap break-words max-h-96 overflow-y-auto">
+                    {result.metadata?.promptUsed || promptText}
+                  </pre>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(promptText);
+                      navigator.clipboard.writeText(result.metadata?.promptUsed || promptText || '');
+                      alert('Prompt copied to clipboard!');
                     }}
-                    className="text-xs text-white/40 hover:text-white/60 transition-colors flex items-center gap-2"
-                    aria-label="Copy AI prompt to clipboard"
+                    className="mt-3 text-xs text-white/50 hover:text-white/80 underline"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    Copy to clipboard
+                    Copy prompt to clipboard
                   </button>
                 </div>
               )}
             </div>
           )}
-        </>
-      ) : (
-        /* Error State */
-        <div className="card p-8 sm:p-12 text-center" role="alert" aria-live="assertive">
-          <div className="text-6xl mb-6" aria-hidden="true">😕</div>
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Something Went Wrong
-          </h2>
-          <p className="text-lg text-white/60 mb-8 max-w-md mx-auto">
-            {result.error || 'Failed to generate your celebrity selfie'}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={onRetry} className="btn-primary" aria-label="Try generating image again">
-              Try Again
-            </button>
-            <button onClick={onReset} className="btn-secondary" aria-label="Start over with new photo">
-              Start Over
-            </button>
-          </div>
         </div>
       )}
 
-      {/* Powered by */}
-      <div className="mt-12 text-center">
-        <p className="text-xs text-white/30">
-          Powered by Google Gemini (Nano Banana Pro) • Replicate API
-        </p>
-      </div>
     </div>
   );
 };
