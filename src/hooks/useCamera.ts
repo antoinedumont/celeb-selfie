@@ -36,8 +36,8 @@ export const useCamera = (): UseCameraReturn => {
         video: {
           facingMode: 'user',
           width: { ideal: 720, max: 1080 },
-          height: { ideal: 1280, max: 1920 },
-          aspectRatio: { ideal: 9 / 16 },
+          height: { ideal: 960, max: 1440 },
+          aspectRatio: { ideal: 3 / 4 },
         },
       });
 
@@ -111,8 +111,8 @@ export const useCamera = (): UseCameraReturn => {
       throw new Error('Could not get canvas context');
     }
 
-    // Portrait mode: 2:3 aspect ratio (width:height)
-    const PORTRAIT_RATIO = 2 / 3; // 0.6667
+    // Portrait mode: 3:4 aspect ratio (width:height) like iPhone camera
+    const PORTRAIT_RATIO = 3 / 4; // 0.75
 
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
@@ -134,8 +134,8 @@ export const useCamera = (): UseCameraReturn => {
       sourceY = (videoHeight - sourceHeight) / 2;
     }
 
-    // Set canvas to portrait dimensions (800x1200 for good quality)
-    const targetWidth = 800;
+    // Set canvas to portrait dimensions (900x1200 for good quality, 3:4 ratio)
+    const targetWidth = 900;
     const targetHeight = 1200;
     canvas.width = targetWidth;
     canvas.height = targetHeight;

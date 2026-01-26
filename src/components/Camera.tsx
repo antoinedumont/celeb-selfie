@@ -42,8 +42,8 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
         </div>
       ) : (
         <>
-          {/* Video Preview Container - 2:3 Portrait Format (width:height) */}
-          <div className="relative h-full overflow-hidden w-full max-w-[66.67vh]" role="region" aria-label="Camera preview">
+          {/* Video Preview Container - 3:4 Portrait Format (width:height) like iPhone camera */}
+          <div className="relative h-full overflow-hidden w-full max-w-[75vh]" role="region" aria-label="Camera preview">
             {/* Title Overlay - Top */}
             <div className="absolute top-0 left-0 right-0 z-20 flex justify-center pt-safe-top" style={{ paddingTop: 'max(1rem, env(safe-area-inset-top, 1rem))' }}>
               <div className="camera-title-overlay">
@@ -52,7 +52,7 @@ export const Camera = ({ onCapture, onError }: CameraProps) => {
               </div>
             </div>
 
-            {/* Video Feed - 2:3 Portrait Format */}
+            {/* Video Feed - 3:4 Portrait Format */}
             <video
               ref={videoRef}
               autoPlay
