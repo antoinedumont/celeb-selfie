@@ -45,7 +45,7 @@ export const BASE_JSON_TEMPLATE: PromptTemplate = {
     celebrity: {
       name: '<CELEBRITY_NAME>',
       role_context: '<ICONIC_ROLE_OR_JOB>',
-      position: 'standing naturally next to original person for a selfie',
+      position: 'standing naturally beside the original person with comfortable spacing, shoulders may touch but heads are 15-20cm apart, like a typical fan photo',
       physical_description: '<PHYSICAL_APPEARANCE_DETAILS>',
     },
     environment: {
@@ -83,7 +83,7 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     celebrity: {
       name: '<CELEBRITY_NAME>',
       role_context: '<ICONIC_ROLE_OR_JOB>',
-      position: 'leaning in close next to original person for an intimate selfie',
+      position: 'standing naturally beside the original person at arm\'s length, with comfortable 15-20cm spacing between heads, like a real fan-celebrity encounter selfie',
       physical_description: '<PHYSICAL_APPEARANCE_DETAILS>',
     },
     environment: {

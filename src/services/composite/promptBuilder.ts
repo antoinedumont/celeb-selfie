@@ -105,7 +105,9 @@ function buildStaticFreestylePrompt(celebrityName: string, facialExpression?: Fa
 5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify clothing style or add accessories.
 6. HEIGHT & PROPORTION PRESERVATION: Preserve realistic height differences between the original person and celebrity. If the celebrity is notably tall (e.g., basketball player), their face/head should appear naturally higher in the frame. If celebrity is shorter, their face should appear lower. DO NOT artificially equalize heights - maintain natural proportions.
 ${facialBlock}
-Ultra-realistic close-up selfie with ${celebrityName}. Natural arm's-length framing with faces dominating the frame in tight close-up. Wide-angle 24mm lens distortion typical of authentic selfies. They are leaning in close next to me, naturally positioned, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate framing. High resolution, professional photography quality.
+NATURAL SELFIE SPACING: Do NOT press heads together. Maintain realistic distance between faces (15-20cm apart) as seen in real celebrity fan photos.
+
+Ultra-realistic selfie with ${celebrityName}. Natural arm's-length framing typical of authentic selfies. Wide-angle 24mm lens distortion. They are standing naturally beside me at a comfortable distance, heads about 15-20cm apart like a real fan selfie, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real casual encounter photo. High resolution, professional photography quality.
 
 High-resolution 8k photorealistic style, shallow depth of field (bokeh) where the subjects are sharp and the background is slightly soft.
 
@@ -245,9 +247,11 @@ function buildCelebritySelfiePrompt(
 4. OUTFIT PRESERVATION: Clone the person's current clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change their attire to match the conference setting or add conference accessories (like lanyards) to this person.
 5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify their clothing style or add conference accessories to them.
 ${facialBlock}
-The Scene: Ultra-realistic close-up selfie at the Learning Technologies Paris exhibition (Porte de Versailles). Natural arm's-length framing with faces dominating the frame.
+NATURAL SELFIE SPACING: Do NOT press heads together. Maintain realistic distance between faces (15-20cm apart) as seen in real conference photos with celebrities.
 
-The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, naturally positioned based on their actual height (respect height differences - taller celebrities naturally appear taller in frame), and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
+The Scene: Ultra-realistic selfie at the Learning Technologies Paris exhibition (Porte de Versailles). Natural arm's-length framing typical of conference photos.
+
+The Celebrity Guest: ${description}. They are standing beside me with natural spacing, heads comfortably apart (15-20cm) like a real conference photo, naturally positioned based on their actual height (respect height differences - taller celebrities naturally appear taller in frame). They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.
 
 The Go1 Paris Booth (Visual Match): The background is a precise replica of the Go1 stand from the reference image.
 
