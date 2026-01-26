@@ -80,40 +80,52 @@ export const CustomCelebrityInput = ({
   };
 
   return (
-    <div className="w-full fade-in flex-1 flex flex-col items-center justify-center py-4">
-      {/* Voice-First HUD Interface - Compact Layout */}
-      <div className="max-w-md mx-auto px-4 w-full">
-        <div className="space-y-5">
-          {/* Vocal Waves (shown when listening) - Apple Smooth Style */}
-          {isListening && (
-            <div className="vocal-wave-apple spring-in" aria-hidden="true">
-              <div className="wave-bar-apple"></div>
-              <div className="wave-bar-apple"></div>
-              <div className="wave-bar-apple"></div>
-              <div className="wave-bar-apple"></div>
-              <div className="wave-bar-apple"></div>
-              <div className="wave-bar-apple"></div>
-            </div>
-          )}
+    <div className="w-full fade-in flex-1 flex flex-col items-center justify-center py-8 px-4">
+      {/* Sleek Spacious Interface - Premium Layout */}
+      <div className="max-w-lg mx-auto w-full space-y-8">
 
-          {/* Status Text - Apple Minimal */}
-          {isListening && (
-            <p className="text-center text-sm text-apple-body animate-pulse">
-              Listening...
+        {/* Vocal Waves - Elevated Above Input */}
+        {isListening && (
+          <div
+            className="vocal-wave-apple spring-in mx-auto"
+            aria-hidden="true"
+            style={{
+              animation: 'fade-in 0.3s ease-out, float 3s ease-in-out infinite',
+            }}
+          >
+            <div className="wave-bar-apple"></div>
+            <div className="wave-bar-apple"></div>
+            <div className="wave-bar-apple"></div>
+            <div className="wave-bar-apple"></div>
+            <div className="wave-bar-apple"></div>
+            <div className="wave-bar-apple"></div>
+          </div>
+        )}
+
+        {/* Status Text - Floating Above */}
+        {isListening && (
+          <p className="text-center text-sm text-white/70 font-light tracking-wide animate-pulse -mt-4">
+            Listening...
+          </p>
+        )}
+
+        {/* Unsupported browser message */}
+        {!isSupported && (
+          <div
+            className="text-center py-4 px-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10"
+            style={{ animation: 'fade-in 0.4s ease-out' }}
+          >
+            <p className="text-sm text-white/60 font-light">
+              La reconnaissance vocale n'est pas supportée sur ce navigateur.
             </p>
-          )}
+          </div>
+        )}
 
-          {/* Unsupported browser message */}
-          {!isSupported && (
-            <div className="text-center">
-              <p className="text-sm text-white/60 px-4">
-                La reconnaissance vocale n'est pas supportée sur ce navigateur.
-              </p>
-            </div>
-          )}
+        {/* Main Input Container - Hero Element */}
+        <div className="space-y-6">
 
-          {/* Input with Mic Button */}
-          <div className="relative w-full">
+          {/* Input Field - Generous Sizing */}
+          <div className="relative">
             <input
               id="celebrity-input"
               type="text"
@@ -127,37 +139,68 @@ export const CustomCelebrityInput = ({
               }}
               onKeyPress={handleKeyPress}
               placeholder={isListening ? "Listening..." : "Which celebrity?"}
-              className="input-apple w-full text-center pr-14"
+              className="input-apple-sleek"
               disabled={disabled || isLoading || isListening}
               autoFocus={!isListening}
               aria-label="Celebrity name with context"
               aria-invalid={!!error}
               aria-describedby={error ? 'input-error' : 'input-tips'}
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: '400',
+                letterSpacing: '-0.01em',
+                height: '64px',
+                paddingLeft: '24px',
+                paddingRight: '68px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
             />
-            {/* Interim transcript overlay - Apple Style */}
+
+            {/* Interim transcript overlay */}
             {interimTranscript && isListening && (
               <div
                 className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 aria-live="polite"
                 aria-label="Interim speech recognition result"
               >
-                <span className="text-apple-body px-6 font-light italic" style={{ opacity: 0.6 }}>
+                <span
+                  className="text-apple-body px-6 font-light italic"
+                  style={{
+                    opacity: 0.6,
+                    fontSize: '1.125rem',
+                  }}
+                >
                   {interimTranscript}
                 </span>
               </div>
             )}
 
-            {/* Voice Button - Inside input on right */}
+            {/* Voice Button - Refined Position */}
             {isSupported && (
               <button
                 type="button"
                 onClick={toggleVoice}
                 disabled={disabled || isLoading}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 voice-btn-inline-sm ${isListening ? 'listening' : ''}`}
+                className={`voice-btn-sleek ${isListening ? 'listening' : ''}`}
                 aria-label={isListening ? 'Stop listening' : 'Start voice input'}
                 aria-live="polite"
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{ transition: 'transform 0.3s ease' }}
+                >
                   <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                   <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
                 </svg>
@@ -165,56 +208,91 @@ export const CustomCelebrityInput = ({
             )}
           </div>
 
-          {/* Error message */}
+          {/* Error message - Breathing Room */}
           {error && (
-            <p id="input-error" className="text-sm text-red-400 text-center" role="alert">
+            <div
+              id="input-error"
+              className="text-sm text-red-400 text-center px-4 py-2 rounded-xl bg-red-500/10 backdrop-blur-sm"
+              role="alert"
+              style={{ animation: 'fade-in 0.3s ease-out' }}
+            >
               {error}
-            </p>
-          )}
-
-          {/* Mode Toggle - Discreet, below input */}
-          {onModeChange && (
-            <div className="mode-toggle-discreet">
-              <button
-                type="button"
-                onClick={() => onModeChange('freestyle')}
-                disabled={disabled || isLoading}
-                className={`mode-option-discreet ${generationMode === 'freestyle' ? 'active' : ''}`}
-                aria-pressed={generationMode === 'freestyle'}
-              >
-                Freestyle
-              </button>
-              <span className="mode-separator">|</span>
-              <button
-                type="button"
-                onClick={() => onModeChange('go1')}
-                disabled={disabled || isLoading}
-                className={`mode-option-discreet ${generationMode === 'go1' ? 'active' : ''}`}
-                aria-pressed={generationMode === 'go1'}
-              >
-                Go1 Booth
-              </button>
             </div>
           )}
-
-          {/* Generate Button - Full width, integrated */}
-          <button
-            onClick={handleSubmit}
-            disabled={!input.trim() || disabled || isLoading || input.trim().length < 3}
-            className="apple-btn w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-busy={isLoading}
-            aria-label={isLoading ? "Generating selfie, please wait" : "Generate selfie with celebrity"}
-          >
-            {isLoading ? 'Creating...' : 'Generate'}
-          </button>
-
-          {/* Tips - Apple Minimal */}
-          {!isListening && !input && (
-            <p id="input-tips" className="text-center text-xs text-white/50 font-light spring-in">
-              Add context like "at the Oscars" or "playing guitar"
-            </p>
-          )}
         </div>
+
+        {/* Mode Toggle - Clear Separation */}
+        {onModeChange && (
+          <div
+            className="mode-toggle-sleek"
+            style={{
+              marginTop: '32px',
+              marginBottom: '32px',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => onModeChange('freestyle')}
+              disabled={disabled || isLoading}
+              className={`mode-option-sleek ${generationMode === 'freestyle' ? 'active' : ''}`}
+              aria-pressed={generationMode === 'freestyle'}
+            >
+              Freestyle
+            </button>
+            <span className="mode-separator-sleek">|</span>
+            <button
+              type="button"
+              onClick={() => onModeChange('go1')}
+              disabled={disabled || isLoading}
+              className={`mode-option-sleek ${generationMode === 'go1' ? 'active' : ''}`}
+              aria-pressed={generationMode === 'go1'}
+            >
+              Go1 Booth
+            </button>
+          </div>
+        )}
+
+        {/* Generate Button - Hero CTA */}
+        <button
+          onClick={handleSubmit}
+          disabled={!input.trim() || disabled || isLoading || input.trim().length < 3}
+          className="apple-btn-sleek"
+          aria-busy={isLoading}
+          aria-label={isLoading ? "Generating selfie, please wait" : "Generate selfie with celebrity"}
+          style={{
+            width: '100%',
+            height: '60px',
+            fontSize: '1.0625rem',
+            fontWeight: '600',
+            letterSpacing: '-0.01em',
+            marginTop: '32px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        >
+          {isLoading ? (
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              Creating...
+            </span>
+          ) : (
+            'Generate'
+          )}
+        </button>
+
+        {/* Tips - Generous Bottom Spacing */}
+        {!isListening && !input && (
+          <p
+            id="input-tips"
+            className="text-center text-xs text-white/40 font-light tracking-wide"
+            style={{
+              marginTop: '24px',
+              animation: 'fade-in 0.5s ease-out',
+              lineHeight: '1.6',
+            }}
+          >
+            Add context like "at the Oscars" or "playing guitar"
+          </p>
+        )}
       </div>
     </div>
   );

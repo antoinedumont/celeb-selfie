@@ -1471,3 +1471,253 @@ body {
     transition: none;
   }
 }
+
+/* ============================================
+   SLEEK REDESIGN - Spacious Mobile-First
+   Optimized for iPhone 12 Mini (375x812)
+   ============================================ */
+
+/* Input - Sleek & Spacious */
+.input-apple-sleek {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  width: 100%;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.88);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  padding: 20px 68px 20px 24px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.04),
+    0 0 0 0 rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-apple-sleek:focus {
+  outline: none;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.08),
+    0 0 0 3px rgba(0, 0, 0, 0.04);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.input-apple-sleek::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+  font-weight: 300;
+}
+
+.input-apple-sleek:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Voice Button - Sleek Minimalist */
+.voice-btn-sleek {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.voice-btn-sleek:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.75);
+  transform: scale(1.05);
+}
+
+.voice-btn-sleek:active {
+  transform: scale(0.95);
+}
+
+.voice-btn-sleek.listening {
+  background: #000;
+  color: #fff;
+  animation: pulse-sleek 1.8s ease-in-out infinite;
+  box-shadow:
+    0 0 0 0 rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.voice-btn-sleek.listening svg {
+  transform: scale(1.1);
+}
+
+.voice-btn-sleek:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-sleek {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Mode Toggle - Sleek Spacious */
+.mode-toggle-sleek {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.mode-option-sleek {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  min-width: 100px;
+}
+
+.mode-option-sleek:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.mode-option-sleek:active {
+  transform: scale(0.96);
+}
+
+.mode-option-sleek.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mode-option-sleek:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mode-separator-sleek {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.875rem;
+  font-weight: 300;
+}
+
+/* Generate Button - Hero CTA Sleek */
+.apple-btn-sleek {
+  background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-family: 'Outfit', -apple-system, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.apple-btn-sleek::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.apple-btn-sleek:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.apple-btn-sleek:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.apple-btn-sleek:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.apple-btn-sleek:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Floating animation for voice waves */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Mobile optimization for iPhone 12 Mini (375px) */
+@media (max-width: 390px) {
+  .input-apple-sleek {
+    font-size: 1.125rem;
+    padding: 18px 64px 18px 20px;
+  }
+
+  .mode-option-sleek {
+    font-size: 0.875rem;
+    padding: 10px 16px;
+    min-width: 90px;
+  }
+
+  .apple-btn-sleek {
+    font-size: 1rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .voice-btn-sleek.listening {
+    animation: none;
+  }
+
+  .input-apple-sleek,
+  .voice-btn-sleek,
+  .mode-option-sleek,
+  .apple-btn-sleek {
+    transition: none;
+  }
+
+  .apple-btn-sleek:hover:not(:disabled),
+  .mode-option-sleek:hover:not(:disabled) {
+    transform: none;
+  }
+}
