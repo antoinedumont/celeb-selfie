@@ -47,9 +47,27 @@ export const useCamera = (): UseCameraReturn => {
         videoRef.current.srcObject = mediaStream;
 
         // Wait for video to be ready
-        videoRef.current.onloadedmetadata = () => {
+        videoRef.current.onloadedmetadata = async () => {
           console.log('[Camera] Video metadata loaded, camera ready');
+          // Explicitly play the video (required for Safari iOS)
+          try {
+            await videoRef.current?.play();
+            console.log('[Camera] Video playback started');
+          } catch (playErr) {
+            console.warn('[Camera] Auto-play failed, user interaction may be required:', playErr);
+          }
           setIsReady(true);
+        };
+
+        // Handle video pause events (Safari iOS may pause video)
+        videoRef.current.onpause = async () => {
+          console.log('[Camera] Video paused, attempting to resume...');
+          try {
+            await videoRef.current?.play();
+            console.log('[Camera] Video resumed successfully');
+          } catch (resumeErr) {
+            console.warn('[Camera] Could not resume video:', resumeErr);
+          }
         };
       }
     } catch (err: any) {
