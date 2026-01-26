@@ -6,6 +6,7 @@
  */
 
 import type { CelebrityGenerationMode } from '../../types';
+import type { FacialExpressionAnalysis } from '../../types/facialExpression.types';
 
 /**
  * Supported AI models for photo compositing
@@ -78,6 +79,9 @@ export interface CompositionConfig {
 
   /** Generation mode: booth-focused (go1) or casual freestyle */
   generationMode?: CelebrityGenerationMode;
+
+  /** Facial expression analysis for accurate expression preservation */
+  facialExpression?: FacialExpressionAnalysis;
 }
 
 /**

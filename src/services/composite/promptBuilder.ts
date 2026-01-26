@@ -8,6 +8,7 @@
 
 import type { CompositionConfig } from './types';
 import type { PromptTemplate } from '../gemini3PromptGenerator.types';
+import type { FacialExpressionAnalysis } from '../../types/facialExpression.types';
 import { generateCelebrityPromptWithGemini3 } from '../gemini3PromptGenerator.service';
 
 /**
@@ -73,11 +74,29 @@ function getCelebrityDetails(celebrityName: string): { description: string; outf
 }
 
 /**
+ * Build facial expression injection block for prompts
+ * Creates a high-weight instruction block based on analyzed expression
+ */
+function buildFacialExpressionBlock(facialExpression?: FacialExpressionAnalysis): string {
+  if (!facialExpression) {
+    return '';
+  }
+
+  return `
+[ANALYZED FACIAL EXPRESSION - WEIGHT: 10/10 - MANDATORY]:
+${facialExpression.detailedDescription}
+This analysis was performed on the input photo. You MUST replicate these EXACT characteristics.
+`;
+}
+
+/**
  * Static fallback template for freestyle mode
  * Used when Gemini 3 is unavailable or returns an error
  * Generates POV selfie prompts by default for authentic selfie experience
  */
-function buildStaticFreestylePrompt(celebrityName: string): string {
+function buildStaticFreestylePrompt(celebrityName: string, facialExpression?: FacialExpressionAnalysis): string {
+  const facialBlock = buildFacialExpressionBlock(facialExpression);
+
   const prompt = `[CRITICAL FACIAL PRESERVATION - HIGHEST PRIORITY]:
 1. FREEZE FACIAL EXPRESSION: Lock the exact expression from the reference image. If mouth is closed, keep it closed. If neutral, keep it neutral. If smiling, replicate the exact smile intensity. DO NOT alter expression to match scene mood or celebrity personality.
 2. STRICT ANATOMICAL LOCK: Preserve mouth position (open/closed), lip shape, teeth visibility (show/hide), eye openness, eyebrow position, and facial muscle tension exactly as shown in reference. Clone every facial feature with photographic precision.
@@ -85,7 +104,7 @@ function buildStaticFreestylePrompt(celebrityName: string): string {
 4. OUTFIT PRESERVATION: Clone clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change attire to match environment or scene context.
 5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify clothing style or add accessories.
 6. HEIGHT & PROPORTION PRESERVATION: Preserve realistic height differences between the original person and celebrity. If the celebrity is notably tall (e.g., basketball player), their face/head should appear naturally higher in the frame. If celebrity is shorter, their face should appear lower. DO NOT artificially equalize heights - maintain natural proportions.
-
+${facialBlock}
 Ultra-realistic close-up selfie with ${celebrityName}. Natural arm's-length framing with faces dominating the frame in tight close-up. Wide-angle 24mm lens distortion typical of authentic selfies. They are leaning in close next to me, naturally positioned, calm and charismatic expression, very recognizable facial features. They are wearing a simple, elegant outfit. Natural soft daylight with slight flash effect, realistic skin texture, sharp facial details, true-to-life colors. Slight background blur (bokeh), in their favorite city. The photo feels spontaneous, candid, and genuine, like a real moment captured casually with intimate framing. High resolution, professional photography quality.
 
 High-resolution 8k photorealistic style, shallow depth of field (bokeh) where the subjects are sharp and the background is slightly soft.
@@ -109,12 +128,17 @@ REMINDER: The input person's face must remain EXACTLY as shown - same expression
  * Always uses POV selfie template for close-up, intimate framing.
  *
  * @param celebrityName - Name of the celebrity to include in the selfie
+ * @param facialExpression - Optional analyzed facial expression for accurate preservation
  * @returns Promise with JSON template and natural language prompt
  */
 export async function buildFreestyleSelfiePrompt(
-  celebrityName: string
+  celebrityName: string,
+  facialExpression?: FacialExpressionAnalysis
 ): Promise<{ jsonTemplate: PromptTemplate | null; naturalLanguage: string; source: 'gemini3' | 'static' }> {
   console.log(`[Prompt Builder] Building freestyle prompt for: ${celebrityName}`);
+  if (facialExpression) {
+    console.log(`[Prompt Builder] With facial expression: ${facialExpression.emotion}, ${facialExpression.smileType}`);
+  }
 
   try {
     // Try Gemini 3 first
@@ -122,9 +146,23 @@ export async function buildFreestyleSelfiePrompt(
 
     if (geminiResult) {
       console.log('[Prompt Builder] Using Gemini 3 generated prompt');
+
+      // Inject facial expression into the generated prompt
+      let naturalLanguage = geminiResult.naturalLanguage;
+      if (facialExpression) {
+        const facialBlock = buildFacialExpressionBlock(facialExpression);
+        // Insert facial expression block after the first line
+        const firstLineEnd = naturalLanguage.indexOf('\n');
+        if (firstLineEnd > 0) {
+          naturalLanguage = naturalLanguage.slice(0, firstLineEnd) + facialBlock + naturalLanguage.slice(firstLineEnd);
+        } else {
+          naturalLanguage = facialBlock + '\n' + naturalLanguage;
+        }
+      }
+
       return {
         jsonTemplate: geminiResult.jsonTemplate,
-        naturalLanguage: geminiResult.naturalLanguage,
+        naturalLanguage,
         source: 'gemini3',
       };
     }
@@ -136,7 +174,7 @@ export async function buildFreestyleSelfiePrompt(
   console.log('[Prompt Builder] Using static template (Gemini 3 unavailable)');
   return {
     jsonTemplate: null,
-    naturalLanguage: buildStaticFreestylePrompt(celebrityName),
+    naturalLanguage: buildStaticFreestylePrompt(celebrityName, facialExpression),
     source: 'static',
   };
 }
@@ -149,15 +187,20 @@ export async function buildFreestyleSelfiePrompt(
  * Uses async pattern to match freestyle mode's interface.
  *
  * @param celebrityName - Name of the celebrity to include in the selfie
+ * @param facialExpression - Optional analyzed facial expression for accurate preservation
  * @returns Promise with natural language prompt and source indicator
  */
 export async function buildGo1BoothSelfiePrompt(
-  celebrityName: string
+  celebrityName: string,
+  facialExpression?: FacialExpressionAnalysis
 ): Promise<{ jsonTemplate: PromptTemplate | null; naturalLanguage: string; source: 'static' }> {
   console.log(`[Prompt Builder] Building Go1 booth prompt for: ${celebrityName}`);
+  if (facialExpression) {
+    console.log(`[Prompt Builder] With facial expression: ${facialExpression.emotion}, ${facialExpression.smileType}`);
+  }
 
   // Use the existing Go1 booth prompt template
-  const prompt = buildCelebritySelfiePrompt(celebrityName);
+  const prompt = buildCelebritySelfiePrompt(celebrityName, undefined, facialExpression);
 
   return {
     jsonTemplate: null,
@@ -182,13 +225,16 @@ export async function buildGo1BoothSelfiePrompt(
  *
  * @param celebrityName - Name of the celebrity to include in the selfie
  * @param config - Optional configuration for customization
+ * @param facialExpression - Optional analyzed facial expression for accurate preservation
  * @returns Simplified prompt matching the successful Replicate test format
  */
 function buildCelebritySelfiePrompt(
   celebrityName: string,
-  config?: CompositionConfig
+  config?: CompositionConfig,
+  facialExpression?: FacialExpressionAnalysis
 ): string {
   const { description, outfit } = getCelebrityDetails(celebrityName);
+  const facialBlock = buildFacialExpressionBlock(facialExpression);
 
   const prompt = `adapt it for ${celebrityName}
 
@@ -198,7 +244,7 @@ function buildCelebritySelfiePrompt(
 3. IDENTITY ANCHOR: The person's face is a non-negotiable visual constant. Replicate facial geometry, proportions, bone structure, skin texture, and all features EXACTLY. Zero modifications allowed.
 4. OUTFIT PRESERVATION: Clone the person's current clothing, fabric textures, colors, patterns, and accessories exactly as shown. DO NOT change their attire to match the conference setting or add conference accessories (like lanyards) to this person.
 5. NEGATIVE CONSTRAINTS: DO NOT add smiles if face is neutral. DO NOT open mouth if lips are closed. DO NOT show teeth if mouth is closed. DO NOT change facial muscle engagement. DO NOT modify their clothing style or add conference accessories to them.
-
+${facialBlock}
 The Scene: Ultra-realistic close-up selfie at the Learning Technologies Paris exhibition (Porte de Versailles). Natural arm's-length framing with faces dominating the frame.
 
 The Celebrity Guest: ${description}. They are standing shoulder-to-shoulder with me, naturally positioned based on their actual height (respect height differences - taller celebrities naturally appear taller in frame), and leaning into the frame for a spontaneous moment. They MUST be wearing a purple-and-white conference lanyard around their neck with a clear plastic badge holder visible.

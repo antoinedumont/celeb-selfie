@@ -28,6 +28,8 @@ import {
 import { buildFreestyleSelfiePrompt, buildGo1BoothSelfiePrompt } from './promptBuilder';
 import { retryWithBackoff, RetryPresets } from './retry.utils';
 import { loadBoothTemplateImage, compressImageDataUrl } from '../../utils/image.utils';
+import { analyzeFacialExpression } from '../facialExpressionAnalyzer.service';
+import type { FacialExpressionAnalysis } from '../../types/facialExpression.types';
 
 // Model identifier on Google API
 const MODEL_NAME = 'gemini-3-pro-image-preview';
@@ -108,6 +110,19 @@ export class GoogleDirectNanoBananaService implements CompositeService {
     try {
       onProgress?.(5);
 
+      // Analyze facial expression for accurate preservation
+      console.log('[Google Direct Nano Banana] Analyzing facial expression...');
+      let facialExpression: FacialExpressionAnalysis | undefined;
+      try {
+        facialExpression = await analyzeFacialExpression(userImageDataUrl);
+        console.log(`[Google Direct Nano Banana] Facial analysis: ${facialExpression.emotion}, ${facialExpression.smileType}, ${facialExpression.mouthPosition}`);
+        console.log(`[Google Direct Nano Banana] Description: ${facialExpression.detailedDescription}`);
+      } catch (error) {
+        console.warn('[Google Direct Nano Banana] Facial analysis failed, continuing without:', error);
+      }
+
+      onProgress?.(8);
+
       // Generate prompt based on mode
       console.log(`[Google Direct Nano Banana] Generating ${mode.toUpperCase()} prompt...`);
 
@@ -115,11 +130,11 @@ export class GoogleDirectNanoBananaService implements CompositeService {
 
       if (mode === 'go1') {
         // Use Go1 booth prompt for conference branding
-        promptData = await buildGo1BoothSelfiePrompt(celebrityName);
+        promptData = await buildGo1BoothSelfiePrompt(celebrityName, facialExpression);
         console.log('[Google Direct Nano Banana] Using Go1 Booth prompt template');
       } else {
         // Use freestyle prompt with AI-generated context
-        promptData = await buildFreestyleSelfiePrompt(celebrityName);
+        promptData = await buildFreestyleSelfiePrompt(celebrityName, facialExpression);
         console.log('[Google Direct Nano Banana] Using Freestyle prompt with Gemini');
       }
 
@@ -238,7 +253,7 @@ export class GoogleDirectNanoBananaService implements CompositeService {
           onProgress?.(45);
 
           // Generate freestyle prompt instead (no branded content)
-          const freestylePromptData = await buildFreestyleSelfiePrompt(celebrityName);
+          const freestylePromptData = await buildFreestyleSelfiePrompt(celebrityName, facialExpression);
           const freestylePrompt = freestylePromptData.naturalLanguage;
 
           console.log('[Google Direct Nano Banana] Using freestyle prompt for fallback');
