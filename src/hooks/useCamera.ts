@@ -32,12 +32,12 @@ export const useCamera = (): UseCameraReturn => {
     setIsReady(false);
 
     try {
+      // Request native camera resolution for widest field of view (like iPhone camera app)
+      // Don't constrain width/height to avoid browser zooming to meet specific dimensions
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { ideal: 720, max: 1080 },
-          height: { ideal: 960, max: 1440 },
-          aspectRatio: { ideal: 3 / 4 },
+          // Use native resolution for natural FOV - cropping happens at capture time
         },
       });
 
