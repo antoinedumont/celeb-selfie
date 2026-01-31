@@ -35,6 +35,8 @@ export interface PromptTemplate {
     composition?: string;
     /** Framing rules: Defines the natural arm's-length framing */
     framing_rules?: string;
+    /** Phone visibility rules: POV selfies should NOT show phone/arm */
+    phone_visibility?: string;
     /** Height proportion preservation instructions */
     height_proportions?: string;
   };

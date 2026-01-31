@@ -72,8 +72,8 @@ export const BASE_JSON_TEMPLATE: PromptTemplate = {
 export const POV_SELFIE_TEMPLATE: PromptTemplate = {
   task: 'edit_image',
   scene_description: {
-    camera_perspective: 'close-up_selfie_POV',
-    action: 'close-up selfie with natural arm-length framing',
+    camera_perspective: 'first_person_POV_selfie',
+    action: 'POV selfie - camera IS the viewer\'s eyes, NO phone or arm visible in frame',
     original_person: {
       identity: 'the person from the input image',
       pose: 'FREEZE FACIAL EXPRESSION: Lock the exact expression from reference. If mouth is closed, keep closed. If neutral, stay neutral. If smiling, match exact smile intensity. MANDATORY: Keep EXACT same outfit, hairstyle, and facial expression. DO NOT alter expression to match scene mood or celebrity personality.',
@@ -93,7 +93,8 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     },
     lens_effect: 'Wide-angle 24mm lens distortion creating slight fisheye effect where faces appear slightly larger in the center.',
     composition: 'Faces dominate the frame entirely, showing only head and shoulders in tight close-up framing. Both people\'s faces take up most of the image space.',
-    framing_rules: 'Natural arm\'s-length framing. Intimate close-up composition typical of authentic selfies.',
+    framing_rules: 'POV selfie - the camera IS the viewer\'s point of view. NO phone visible, NO arm holding phone, NO hand in frame. The image is seen directly through the person\'s eyes as if they ARE the camera.',
+    phone_visibility: 'CRITICAL: Do NOT show any phone, smartphone, hand holding device, or selfie arm in the image. This is a pure POV shot where the viewer IS the camera.',
     height_proportions: 'Preserve realistic height differences between original person and celebrity based on their actual heights. Taller person naturally appears with head higher in frame, shorter person with head lower. DO NOT artificially equalize heights.',
   },
   visual_style: {
@@ -103,7 +104,7 @@ export const POV_SELFIE_TEMPLATE: PromptTemplate = {
     depth_and_scale: 'realistic proportions for all subjects and the background, with slight wide-angle perspective distortion',
   },
   result_description:
-    "A seamless, photorealistic close-up selfie. The original person and the celebrity are standing together in natural selfie framing, with both faces clearly visible and dominating the frame. The background is the celebrity's iconic professional environment, slightly blurred (bokeh). CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything.",
+    "A seamless, photorealistic POV selfie shot. The original person and the celebrity are standing together face-to-face, with both faces clearly visible and dominating the frame. NO phone, NO arm, NO hand visible - this is a pure first-person POV where the camera IS the viewer's eyes. The background is the celebrity's iconic professional environment, slightly blurred (bokeh). CRITICAL: The original person must maintain their EXACT appearance from the input image - same clothes, same hair, same everything.",
 };
 
 /**
@@ -135,6 +136,7 @@ The setting is ${environment.setting_name}. ${environment.location_details}. The
 ${scene_description.lens_effect ? `\nLens Effect:\n${scene_description.lens_effect}` : ''}
 ${scene_description.composition ? `\nComposition:\n${scene_description.composition}` : ''}
 ${scene_description.framing_rules ? `\nFraming Rules:\n${scene_description.framing_rules}` : ''}
+${scene_description.phone_visibility ? `\nPhone Visibility:\n${scene_description.phone_visibility}` : ''}
 
 Visual Style:
 - ${visual_style.realism} quality
